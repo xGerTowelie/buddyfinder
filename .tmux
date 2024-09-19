@@ -1,5 +1,5 @@
 {
-  "session_name": "NextAuth",
+  "session_name": "BuddyFinder",
   "windows": [
     {
       "name": "Editor",
