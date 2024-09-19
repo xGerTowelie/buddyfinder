@@ -14,24 +14,42 @@ const images = [
     "/images/city.jpg",
     "/images/shanghai.jpg",
     "/images/global.jpg",
-    "/images/city.jpg",
-    "/images/city.jpg",
-    "/images/city.jpg"
+    "/images/rome.jpg",
+    "/images/friends.jpg",
+    "/images/chatting.jpg",
+    "/images/money.jpg",
+    "/images/technology.jpg",
+    "/images/relaxed.jpg",
+    "/images/fun.jpg",
 ]
 
 const gradients = [
-    "bg-gradient-to-br from-teal-600 to-blue-800",
-    "bg-gradient-to-br from-purple-600 to-indigo-800",
-    "bg-gradient-to-br from-pink-600 to-orange-800",
-    "bg-gradient-to-br from-green-600 to-yellow-800",
-    "bg-gradient-to-br from-red-600 to-blue-800",
-    "bg-gradient-to-br from-indigo-600 to-pink-800",
-    "bg-gradient-to-br from-yellow-600 to-red-800",
-    "bg-gradient-to-br from-blue-600 to-green-800",
-    "bg-gradient-to-br from-orange-600 to-purple-800",
-    "bg-gradient-to-br from-cyan-600 to-lime-800"
-]
+    // Original
+    "bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500",
 
+    // Variations with different colors and opacities
+    "bg-gradient-to-r from-blue-500/80 via-teal-500/70 to-green-500/90",
+    "bg-gradient-to-r from-red-500/75 via-orange-500/85 to-yellow-500/70",
+    "bg-gradient-to-r from-fuchsia-500/90 via-rose-500/80 to-amber-500/85",
+    "bg-gradient-to-r from-cyan-500/70 via-sky-500/80 to-indigo-500/75",
+    "bg-gradient-to-r from-emerald-500/85 via-lime-500/75 to-yellow-500/80",
+
+    // Variations with different directions
+    "bg-gradient-to-br from-violet-500/80 via-purple-500/70 to-fuchsia-500/90",
+    "bg-gradient-to-bl from-pink-500/75 via-rose-500/85 to-red-500/70",
+    "bg-gradient-to-tr from-blue-500/90 via-indigo-500/80 to-violet-500/85",
+
+    // Variations with more color stops
+    "bg-gradient-to-r from-red-500/70 via-orange-500/80 via-yellow-500/75 to-green-500/85",
+    "bg-gradient-to-r from-blue-500/85 via-indigo-500/75 via-purple-500/80 to-pink-500/70",
+
+    // Variations with custom colors and opacities
+    "bg-gradient-to-r from-[#ff9a9e]/80 via-[#fad0c4]/70 to-[#ffecd2]/90",
+    "bg-gradient-to-r from-[#a18cd1]/75 via-[#fbc2eb]/85 to-[#fad0c4]/80",
+
+    // Variation with alternating opacities
+    "bg-gradient-to-r from-purple-500/90 via-pink-500/50 via-red-500/90 to-orange-500/50"
+]
 const blendModes = [
     "normal",
     "multiply",
@@ -51,21 +69,42 @@ const blendModes = [
     "luminosity"
 ]
 
-// Slide data
 const slides = [
     {
-        title: "Discover BuddyFinder",
-        content: "Connect with like-minded individuals across the globe. BuddyFinder brings people together through shared passions and interests.",
-        buttonText: "Start Your Journey",
-        buttonLink: "/register"
+        title: "Meet BuddyFinder",
+        content: "BuddyFinder helps you connect with people who share your passions, whether it’s music, sports, or hobbies. It’s not about where you live or how old you are – just genuine connections through what you love."
     },
     {
-        title: "Connect Through Interests",
-        content: "Find your tribe based on shared hobbies, skills, and passions. BuddyFinder helps you create meaningful connections worldwide.",
+        title: "No Costs – Just Connection",
+        content: "Everything here is free! No ads or hidden fees. If you love BuddyFinder and want to support it, you can drop a donation or grab some profile visuals. Otherwise, just enjoy connecting!"
     },
     {
-        title: "Join BuddyFinder Today",
-        content: "Start your journey to authentic, global connections. Join BuddyFinder and discover a world of shared interests and new friendships.",
+        title: "Find People by Keywords",
+        content: "Tell us what you’re into, and we’ll help you find others who love the same things. Just use simple keywords – it’s an easy way to meet people with the same interests, no complicated algorithms."
+    },
+    {
+        title: "Easy Friend Requests",
+        content: "Found someone cool? Send them a friend request, and even answer one of their questions to break the ice. Connecting has never been this easy or fun."
+    },
+    {
+        title: "Simple Chatting",
+        content: "Once you're connected, you can chat right here on BuddyFinder. It’s simple and text-based – perfect for getting to know each other better and making plans."
+    },
+    {
+        title: "Find Buddies Nearby",
+        content: "Looking for someone local? Set your location to find friends nearby. Whether it’s for a workout or a hangout, BuddyFinder makes local connections easy."
+    },
+    {
+        title: "Search Globally",
+        content: "Distance doesn’t matter here! Whether you’re looking for a gaming buddy or a language partner, BuddyFinder helps you find friends no matter where they live."
+    },
+    {
+        title: "Easy Settings",
+        content: "BuddyFinder keeps it simple, but if you want to tweak things like privacy or notifications, the settings page has you covered."
+    },
+    {
+        title: "Be Kind and Connect",
+        content: "We’re all about positive connections. Be respectful and enjoy meeting new people. Who knows? You might find some amazing friends. Ready to join?",
         buttonText: "Sign Up Now",
         buttonLink: "/register"
     }
@@ -87,6 +126,7 @@ const Slide = ({ slide, image, gradient, blendMode, effectStrength, isActive }) 
                 layout="fill"
                 objectFit="cover"
                 quality={100}
+                className="blur-[2px]"
                 priority={isActive}
             />
         </div>
@@ -103,7 +143,7 @@ const Slide = ({ slide, image, gradient, blendMode, effectStrength, isActive }) 
                 initial={{ y: -50, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.2 }}
-                className="text-5xl md:text-6xl font-bold text-white text-center"
+                className="text-6xl md:text-8xl font-bold text-white text-center"
             >
                 {slide.title}
             </motion.h1>
@@ -112,7 +152,7 @@ const Slide = ({ slide, image, gradient, blendMode, effectStrength, isActive }) 
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="text-white text-xl md:text-2xl text-center md:max-w-3xl"
+                className="text-white font-semibold text-2xl md:text-3xl text-center md:max-w-4xl"
             >
                 {slide.content}
             </motion.p>
@@ -255,7 +295,7 @@ export default function Home() {
                 />
             )}
 
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center items-center gap-4 z-20">
+            <div className="absolute bottom-1/4 left-0 right-0 flex justify-center items-center gap-4 z-20">
                 <Button
                     onClick={handlePrev}
                     disabled={currentSlide === 0}
