@@ -6,6 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Menu, X } from "lucide-react"
 import { useState } from "react"
+import ProfileExamples from "@/components/Profiles"
 
 export default function ChatPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -23,6 +24,7 @@ export default function ChatPage() {
                             <span>{user}</span>
                         </div>
                     ))}
+                    <ProfileExamples />
                 </div>
             </div>
             <div className="flex-1 flex flex-col">
