@@ -40,7 +40,7 @@ export default function RootLayout({
                     <Button variant="ghost" size="icon"><BellIcon className="h-4 w-4" /></Button>
                 </header>
                 <main className="flex-1">
-                    <ScrollArea className="h-[calc(100vh-64px)]">
+                    <ScrollArea className="h-[calc(100vh-64px)] px-4 py-2">
                         {children}
                     </ScrollArea>
                 </main>

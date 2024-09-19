@@ -86,3 +86,13 @@ A free, globally accessible platform connecting people based on shared interests
 ## Open Questions
 - How to scale appropriately
 
+## Prompts
+
+mock:
+create a file under src/app/(mock)/,,, that is used to test a specific concept i will describe at the end. i want to test this concept on that route and if i like parts of it i will add it into the real app. thats how i can get inspiration by ai but dont just copy paste everything which might break my app. create that page.tsx for that folder with this concept:
+
+use a web design that ...
+
+on the page i want to see...
+
+
