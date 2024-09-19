@@ -84,5 +84,5 @@ A free, globally accessible platform connecting people based on shared interests
 ---
 
 ## Open Questions
-- How to scale appropriately.
+- How to scale appropriately
 
