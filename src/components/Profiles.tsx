@@ -1,11 +1,12 @@
 import React from 'react';
-import { Badge } from 'lucide-react';
+import { Badge, BadgeCheck, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 
 interface ProfileProps {
     imageUrl: string;
     showSupportBadge?: boolean;
-    variant: 'default' | 'neon' | 'glitch' | 'ripple' | 'outline';
+    variant?: 'default' | 'neon' | 'ripple' | 'outline' | 'rainbow' | 'pixelate' | 'liquid' | 'bounce' | 'flip' | 'morph' | 'hologram';
     size?: 'sm' | 'md' | 'lg';
 }
 
@@ -17,7 +18,7 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
 }) => {
 
     const sizeStyles = {
-        sm: 'w-6 h-6',
+        sm: 'w-8 h-8',
         md: 'w-10 h-10',
         lg: 'w-14 h-14',
     };
@@ -53,45 +54,65 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
       0%, 100% { opacity: 1; }
       50% { opacity: 0.5; }
     }
-    @keyframes glitch {
-      0% { transform: translate(0); }
-      20% { transform: translate(-5px, 5px); }
-      40% { transform: translate(-5px, -5px); }
-      60% { transform: translate(5px, 5px); }
-      80% { transform: translate(5px, -5px); }
-      100% { transform: translate(0); }
-    }
     @keyframes ripple {
       0% { box-shadow: 0 0 0 0 rgba(155, 155, 155, 0.7); }
       100% { box-shadow: 0 0 0 10px rgba(155, 155, 155, 0); }
     }
-    @keyframes shine {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
-    }
     @keyframes outline {
       0%, 100% { outline-offset: 0px; }
       50% { outline-offset: 5px; }
+    }
+    @keyframes rainbow {
+      0% { filter: hue-rotate(0deg); }
+      100% { filter: hue-rotate(360deg); }
+    }
+    @keyframes pixelate {
+      0%, 100% { filter: url(#pixelate-0); }
+      50% { filter: url(#pixelate-10); }
+    }
+    @keyframes liquid {
+      0% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+      50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+      100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    @keyframes flip {
+      0% { transform: perspective(400px) rotateY(0); }
+      100% { transform: perspective(400px) rotateY(360deg); }
+    }
+    @keyframes morph {
+      0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+      25% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+      50% { border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%; }
+      75% { border-radius: 40% 60% 70% 30% / 60% 30% 70% 40%; }
+    }
+    @keyframes hologram {
+      0% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.7); }
+      70% { box-shadow: 0 0 0 10px rgba(0, 255, 255, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0); }
+    }
+    @keyframes glare {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    @keyframes sketch {
+      0% { filter: url(#sketch-0); }
+      100% { filter: url(#sketch-1); }
     }
   `;
 
     const variantStyles = {
         default: `
       ${baseStyles}
-      border-4 border-blue-500
-      animate-[rotate_10s_linear_infinite]
     `,
         neon: `
       ${baseStyles}
       border-4 border-green-400
       shadow-[0_0_10px_#4ade80,0_0_20px_#4ade80,0_0_30px_#4ade80]
       animate-[pulse_2s_ease-in-out_infinite]
-    `,
-        glitch: `
-      ${baseStyles}
-      before:content-[''] before:absolute before:inset-0
-      before:bg-red-500 before:mix-blend-screen before:opacity-50
-      animate-[glitch_500ms_steps(2)_infinite]
     `,
         ripple: `
       ${baseStyles}
@@ -101,7 +122,41 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
       ${baseStyles}
       outline outline-4 outline-blue-500
       animate-[outline_2s_ease-in-out_infinite]
-    `
+    `,
+        rainbow: `
+      ${baseStyles}
+      border-4 border-white
+      animate-[rainbow_3s_linear_infinite]
+    `,
+        pixelate: `
+      ${baseStyles}
+      animate-[pixelate_2s_ease-in-out_infinite]
+    `,
+        liquid: `
+      ${baseStyles}
+      border-4 border-blue-500
+      animate-[liquid_5s_ease-in-out_infinite]
+    `,
+        bounce: `
+      ${baseStyles}
+      border-4 border-yellow-500
+      animate-[bounce_1s_ease-in-out_infinite]
+    `,
+        flip: `
+      ${baseStyles}
+      border-4 border-purple-500
+      animate-[flip_2s_ease-in-out_infinite]
+    `,
+        morph: `
+      ${baseStyles}
+      border-4 border-pink-500
+      animate-[morph_8s_ease-in-out_infinite]
+    `,
+        hologram: `
+      ${baseStyles}
+      border-4 border-cyan-400
+      animate-[hologram_1.5s_ease-in-out_infinite]
+    `,
     };
 
     return (
@@ -112,8 +167,17 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
             </div>
             {showSupportBadge && (
                 <div className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4">
-                    <div className={cn("bg-yellow-400 rounded-full", badgePadding(size))}>
-                        <Badge className={badgeSize(size)} />
+                    <div className={cn("bg-cyan-400 rounded-full border-[1px] border-neutral-600/30", badgePadding(size))}>
+                        <TooltipProvider>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <BadgeCheck className={badgeSize(size)} />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                    <p>Website Supporter</p>
+                                </TooltipContent>
+                            </Tooltip>
+                        </TooltipProvider>
                     </div>
                 </div>
             )}
@@ -123,8 +187,9 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
 
 const ProfileExamples: React.FC = () => {
     const variants: ProfileProps['variant'][] = [
-        'default', 'neon', 'glitch', 'ripple', 'outline'
+        'default', 'neon', 'ripple', 'outline', 'flip', 'morph', 'liquid', 'bounce', 'rainbow', 'pixelate', 'hologram'
     ];
+
     const sizes: ProfileProps['size'][] = ['sm', 'md', 'lg'];
 
     return (
@@ -135,7 +200,7 @@ const ProfileExamples: React.FC = () => {
                     {sizes.map((size) => (
                         <AnimatedProfile
                             key={`${variant}-${size}`}
-                            imageUrl="https://avatars.githubusercontent.com/u/124599?v=4"
+                            imageUrl="https://images.unsplash.com/photo-1532074205216-d0e1f4b87368?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2ZpbHxlbnwwfHwwfHx8MA%3D%3D"
                             showSupportBadge={true}
                             size={size}
                             variant={variant}

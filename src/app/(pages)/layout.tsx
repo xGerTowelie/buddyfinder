@@ -19,7 +19,7 @@ export default function RootLayout({
         <div className="flex h-screen bg-gray-100">
             <aside className="w-64 bg-white hidden md:block">
                 <div className="p-4 h-16 flex items-center border-b">
-                    <h1 className="text-2xl font-bold">Dashboard</h1>
+                    <h1 className="text-2xl font-bold">BuddyFINDER</h1>
                 </div>
                 <nav className="p-4">
                     <ul className="space-y-2">
