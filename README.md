@@ -96,3 +96,13 @@ use a web design that ...
 on the page i want to see...
 
 
+
+## Todo
+- [ ] add ko fi link
+- [ ] premium badge
+- [ ] settings basic setup
+- [ ] profile basic setup
+- [ ] requests basic setup
+- [ ] chats basic setup
+- [ ] chat realtime?
+- [ ] define components
