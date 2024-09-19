@@ -106,3 +106,6 @@ on the page i want to see...
 - [ ] chats basic setup
 - [ ] chat realtime?
 - [ ] define components
+- [ ] add back middleware
+- [ ] all pages redirect to login and then the startpage
+- [ ] setup database with auth
