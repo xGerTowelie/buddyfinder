@@ -3,8 +3,7 @@
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Menu, X } from "lucide-react"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useState } from "react"
 import ProfileExamples from "@/components/Profiles"
 
@@ -24,7 +23,6 @@ export default function ChatPage() {
                             <span>{user}</span>
                         </div>
                     ))}
-                    <ProfileExamples />
                 </div>
             </div>
             <div className="flex-1 flex flex-col">
@@ -39,6 +37,7 @@ export default function ChatPage() {
                             <p className="text-xs text-gray-500 mt-1">You - 9:02 AM</p>
                         </div>
                     </div>
+                    <ProfileExamples />
                 </ScrollArea>
                 <div className="bg-white border-t p-4">
                     <div className="flex space-x-2 max-w-2xl mx-auto">
