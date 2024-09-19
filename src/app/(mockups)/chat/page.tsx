@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { useState } from "react"
-import ProfileExamples from "@/components/Profiles"
+import ProfileExamples, { AnimatedProfile } from "@/components/Profiles"
 
 export default function ChatPage() {
     const [sidebarOpen, setSidebarOpen] = useState(false)
@@ -17,9 +17,12 @@ export default function ChatPage() {
                 <div className="space-y-2">
                     {['Alice', 'Bob', 'Charlie', 'David'].map((user) => (
                         <div key={user} className="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded">
-                            <Avatar>
-                                <AvatarFallback>{user[0]}</AvatarFallback>
-                            </Avatar>
+                            <AnimatedProfile
+                                imageUrl="https://avatars.githubusercontent.com/u/124599?v=4"
+                                showSupportBadge={true}
+                                size="md"
+                                variant="ripple"
+                            />
                             <span>{user}</span>
                         </div>
                     ))}
