@@ -10,9 +10,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Icons } from "@/components/ui/icons"
 import Link from 'next/link'
 
+type SignInForm = {
+    username: string,
+    password: string,
+}
 export default function SignIn() {
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [form, setForm] = useState<SignInForm>({ username: "", password: "" })
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
@@ -21,20 +24,20 @@ export default function SignIn() {
         setIsLoading(true)
         try {
             const result = await signIn('credentials', {
-                email,
-                password,
+                username: form.username,
+                password: form.password,
                 redirect: false,
             })
 
             if (result?.error) {
                 console.error(result.error)
-                // You might want to show an error message to the user here
             } else {
+                // Clean Slate at Home
                 router.replace('/')
                 router.refresh()
             }
         } catch (error) {
-            console.error('An error occurred:', error)
+            console.error('An error occurred on signin:', error)
         } finally {
             setIsLoading(false)
         }
@@ -50,12 +53,12 @@ export default function SignIn() {
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="email">Email</Label>
+                            <Label htmlFor="user">Username</Label>
                             <Input
-                                id="email"
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                id="user"
+                                type="text"
+                                value={form.username}
+                                onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
                                 placeholder="john@example.com"
                                 required
                             />
@@ -65,8 +68,8 @@ export default function SignIn() {
                             <Input
                                 id="password"
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={form.password}
+                                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                                 placeholder="••••••••"
                                 required
                             />

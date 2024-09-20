@@ -8,10 +8,14 @@ import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
+type SignUpForm = {
+    username: string
+    email: string
+    password: string
+}
+
 export default function SignUp() {
-    const [username, setUsername] = useState('')
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+    const [form, setForm] = useState<SignUpForm>({ username: "", email: "", password: "" })
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
 
@@ -19,10 +23,12 @@ export default function SignUp() {
         e.preventDefault()
         setIsLoading(true)
         try {
+
+            // call signup route with form data
             const response = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password }),
+                body: JSON.stringify({ username: form.username, email: form.email, password: form.password }),
             })
 
             if (response.ok) {
@@ -30,10 +36,10 @@ export default function SignUp() {
                 router.refresh()
             } else {
                 const data = await response.json()
-                console.error(data.error)
+                console.error("signup failed:", data.error)
             }
         } catch (error) {
-            console.error('An error occurred:', error)
+            console.error('An error occurred on signup:', error)
         } finally {
             setIsLoading(false)
         }
@@ -53,8 +59,8 @@ export default function SignUp() {
                             <Input
                                 id="username"
                                 type="text"
-                                value={username}
-                                onChange={(e) => setUsername(e.target.value)}
+                                value={form.username}
+                                onChange={(e) => setForm((prev) => ({ ...prev, username: e.target.value }))}
                                 placeholder="John Doe"
                                 required
                             />
@@ -64,8 +70,8 @@ export default function SignUp() {
                             <Input
                                 id="email"
                                 type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+                                value={form.email}
+                                onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
                                 placeholder="john@example.com"
                                 required
                             />
@@ -75,8 +81,8 @@ export default function SignUp() {
                             <Input
                                 id="password"
                                 type="password"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={form.password}
+                                onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
                                 placeholder="••••••••"
                                 required
                             />

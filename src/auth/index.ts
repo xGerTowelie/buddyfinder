@@ -2,30 +2,40 @@ import NextAuth, { NextAuthConfig, User } from "next-auth"
 import Credentials from "next-auth/providers/credentials"
 import { validateUser, LoginInput } from "@/lib/auth"
 
+
 export const BASE_PATH = "/api/auth"
+
 
 const authConfig: NextAuthConfig = {
     providers: [
+
+        // Manual Registration
         Credentials({
             name: "Credentials",
+
+            // Define Signin Form
             credentials: {
-                email: { label: "Email", type: "text" },
+                username: { label: "Username", type: "text" },
                 password: { label: "Password", type: "password" }
             },
-            async authorize(credentials): Promise<User | null> {
-                const typedCredentials = credentials as Record<"email" | "password", string>
 
-                if (!typedCredentials.email || !typedCredentials.password) {
+            // Runs when authentication needs to be checked
+            async authorize(cred): Promise<User | null> {
+                const credentials = cred as Record<"username" | "password", string>
+
+                // Missing Inputs
+                if (!credentials.password || !credentials.username) {
                     return null
                 }
 
+                // Try Login
                 const loginData: LoginInput = {
-                    email: typedCredentials.email,
-                    password: typedCredentials.password,
+                    username: credentials.username,
+                    password: credentials.password,
                 }
-
                 const user = await validateUser(loginData)
 
+                // Success
                 if (user) {
                     return {
                         id: user.id,
@@ -34,7 +44,8 @@ const authConfig: NextAuthConfig = {
                     }
                 }
 
-                console.log("Invalid credentials provided:", typedCredentials.email)
+                // Error
+                console.log("Invalid credentials provided:", credentials)
                 return null
             }
         })

@@ -16,6 +16,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { Toaster } from '@/components/ui/toaster'
 
 export default function RootLayout({
     children,
@@ -96,6 +97,7 @@ export default function RootLayout({
                 </main>
             </div>
             <FeedbackModal isOpen={isFeedbackModalOpen} onClose={() => setIsFeedbackModalOpen(false)} />
+            <Toaster />
         </div>
     )
 }

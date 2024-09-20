@@ -5,8 +5,6 @@ export const config = {
     matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"]
 }
 
-// this method gets called on requests,
-// that match the exported config
 export default auth((req) => {
     const url = new URL(req.url)
 

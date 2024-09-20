@@ -16,35 +16,8 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     return (
-        <div className="flex h-screen bg-gray-100">
-            <aside className="w-64 bg-white hidden md:block">
-                <div className="p-4 h-16 flex items-center border-b">
-                    <h1 className="text-2xl font-bold">BuddyFINDER</h1>
-                </div>
-                <nav className="p-4">
-                    <ul className="space-y-2">
-                        <li><Button variant="ghost" className="w-full justify-start"><UserIcon className="mr-2 h-4 w-4" />Profile</Button></li>
-                        <li><Button variant="ghost" className="w-full justify-start"><FileTextIcon className="mr-2 h-4 w-4" />Requests</Button></li>
-                        <li><Button variant="ghost" className="w-full justify-start"><MessageSquareIcon className="mr-2 h-4 w-4" />Chats</Button></li>
-                        <li><Button variant="ghost" className="w-full justify-start"><SettingsIcon className="mr-2 h-4 w-4" />Settings</Button></li>
-                    </ul>
-                </nav>
-            </aside>
-            <div className="flex-1 flex flex-col">
-                <header className="bg-white h-16 p-4 flex justify-between items-center border-b">
-                    <Button variant="ghost" className="md:hidden"><MenuIcon className="h-6 w-6" /></Button>
-                    <div className="flex items-center space-x-4 flex-1">
-                        <Input type="text" placeholder="Search..." className="w-full md:w-96" />
-                        <Button variant="ghost" size="icon"><SearchIcon className="h-4 w-4" /></Button>
-                    </div>
-                    <Button variant="ghost" size="icon"><BellIcon className="h-4 w-4" /></Button>
-                </header>
-                <main className="flex-1">
-                    <ScrollArea className="h-[calc(100vh-64px)]">
-                        {children}
-                    </ScrollArea>
-                </main>
-            </div>
+        <div>
+            {children}
         </div>
     )
 }

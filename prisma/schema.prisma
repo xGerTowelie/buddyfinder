@@ -11,7 +11,10 @@ datasource db {
 
 model User {
     id               String          @id @default(uuid())
-    nickname         String
+    nickname         String?
+    email            String
+    username         String          @unique
+    password         String
     age              Int?
     gender           String?
     location         String?
@@ -72,4 +75,3 @@ model Message {
     sender     User     @relation("Sender", fields: [senderId], references: [id])
     receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
 }
-
