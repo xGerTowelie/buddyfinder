@@ -21,6 +21,7 @@ model User {
     showAge          Boolean         @default(true)
     showGender       Boolean         @default(true)
     showLocation     Boolean         @default(true)
+    profileImage     String? // This line remains the same
     keywords         Keyword[]
     topKeywords      TopKeyword[]
     icebreakers      Icebreaker[]

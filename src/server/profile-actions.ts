@@ -20,8 +20,10 @@ export async function updateProfile(profileData: Profile) {
                 showAge: validatedData.showAge,
                 showGender: validatedData.showGender,
                 showLocation: validatedData.showLocation,
+                profileImage: validatedData.profileImage,
             },
         })
+
 
         // Update keywords
         await prisma.keyword.deleteMany({ where: { userId: user.id } })
@@ -50,7 +52,6 @@ export async function updateProfile(profileData: Profile) {
                 userId: user.id,
             })),
         })
-
         return { success: true }
     } catch (error) {
         console.error('Failed to update profile:', error)
@@ -58,6 +59,26 @@ export async function updateProfile(profileData: Profile) {
     }
 }
 
+
+export async function uploadProfileImage(file: File) {
+    const user = await getLoggedInUser()
+
+    try {
+        const { url } = await put(`profile-images/${user.id}`, file, {
+            access: 'public',
+        })
+
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { profileImage: url },
+        })
+
+        return { success: true, url }
+    } catch (error) {
+        console.error('Failed to upload profile image:', error)
+        return { success: false, error: 'Failed to upload profile image' }
+    }
+}
 export async function getProfile(): Promise<Profile | null> {
     const user = await getLoggedInUser()
 

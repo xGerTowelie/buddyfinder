@@ -1,21 +1,29 @@
-import React from 'react';
-import { Badge, BadgeCheck, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { Badge, BadgeCheck, Heart, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { Button } from './ui/button';
+import { Input } from './ui/input';
 
 interface ProfileProps {
     imageUrl: string;
     showSupportBadge?: boolean;
     variant?: 'default' | 'neon' | 'ripple' | 'outline' | 'rainbow' | 'pixelate' | 'liquid' | 'bounce' | 'flip' | 'morph' | 'hologram';
     size?: 'sm' | 'md' | 'lg' | 'xl';
+    onImageUpload: (url: string) => void;
 }
 
 export const AnimatedProfile: React.FC<ProfileProps> = ({
     imageUrl,
     showSupportBadge = false,
     variant = 'default',
-    size = 'md'
+    size = 'md',
+    onImageUpload
 }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const sizeStyles = {
         sm: 'w-8 h-8',
@@ -162,33 +170,85 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
     `,
     };
 
+    const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            setIsUploading(true);
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload image');
+                }
+
+                const data = await response.json();
+                onImageUpload(data.url);
+                setIsDialogOpen(false);
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                // Handle error (e.g., show an error message to the user)
+            } finally {
+                setIsUploading(false);
+            }
+        }
+    };
+
     return (
-        <div className="relative inline-block">
-            <div className={variantStyles[variant]}>
-                <style>{keyframes}</style>
-                <img src={imageUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
-            </div>
-            {showSupportBadge && (
-                <div className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4">
-                    <div className={cn("bg-cyan-400 rounded-full border-[1px] border-neutral-600/30", badgePadding(size))}>
-                        <TooltipProvider>
-                            <Tooltip>
-                                <TooltipTrigger asChild>
-                                    <BadgeCheck className={badgeSize(size)} />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                    <p>Website Supporter</p>
-                                </TooltipContent>
-                            </Tooltip>
-                        </TooltipProvider>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <div
+                    className="relative inline-block cursor-pointer"
+                    onMouseEnter={() => setIsHovered(true)}
+                    onMouseLeave={() => setIsHovered(false)}
+                >
+                    <div className={variantStyles[variant]}>
+                        <style>{keyframes}</style>
+                        <img src={imageUrl} alt="Profile" className="w-full h-full object-cover rounded-full" />
+                        {isHovered && (
+                            <div className="absolute inset-0 bg-black bg-opacity-50 rounded-full flex items-center justify-center">
+                                <Edit className="text-white" />
+                            </div>
+                        )}
                     </div>
+                    {showSupportBadge && (
+                        <div className="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4">
+                            <div className={cn("bg-cyan-400 rounded-full border-[1px] border-neutral-600/30", badgePadding(size))}>
+                                <TooltipProvider>
+                                    <Tooltip>
+                                        <TooltipTrigger asChild>
+                                            <BadgeCheck className={badgeSize(size)} />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                            <p>Website Supporter</p>
+                                        </TooltipContent>
+                                    </Tooltip>
+                                </TooltipProvider>
+                            </div>
+                        </div>
+                    )}
                 </div>
-            )}
-        </div>
+            </DialogTrigger>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Upload Profile Picture</DialogTitle>
+                </DialogHeader>
+                <Input type="file" accept="image/*" onChange={handleFileChange} disabled={isUploading} />
+                <Button onClick={() => setIsDialogOpen(false)} disabled={isUploading}>
+                    {isUploading ? 'Uploading...' : 'Cancel'}
+                </Button>
+            </DialogContent>
+        </Dialog>
     );
 };
 
 const ProfileExamples: React.FC = () => {
+
     const variants: ProfileProps['variant'][] = [
         'default', 'neon', 'ripple', 'outline', 'flip', 'morph', 'liquid', 'bounce', 'rainbow', 'pixelate', 'hologram'
     ];

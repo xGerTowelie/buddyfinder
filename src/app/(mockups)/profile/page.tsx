@@ -9,7 +9,6 @@ import { ZodError } from "zod"
 import { Profile, ProfileSchema } from "@/lib/validation"
 import { GeneralSection, IcebreakersSection, KeywordsSection, PrivacySection, TopKeywordsSection } from "@/components/profile"
 
-
 const tabs = [
     { id: "general", label: "General" },
     { id: "keywords", label: "Keywords" },
@@ -79,15 +78,39 @@ export default function ProfilePage() {
         }
     }
 
+    const handleImageUpload = async (url: string) => {
+        try {
+            const updatedProfile = { ...profile, profileImage: url };
+            const result = await updateProfile(updatedProfile);
+            if (result.success) {
+                setProfile(updatedProfile);
+                toast({
+                    title: "Profile image updated",
+                    description: "Your profile image has been successfully updated.",
+                });
+            } else {
+                throw new Error(result.error || "Failed to update profile image");
+            }
+        } catch (error) {
+            console.error('Error updating profile image:', error);
+            toast({
+                title: "Failed to update profile image",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+                variant: "destructive",
+            });
+        }
+    }
+
     return (
         <div className="flex h-[calc(100vh-120px)] bg-white px-8 py-4 rounded-xl overflow-hidden shadow-sm border-[1px] border-neutral-200 shadow-slate-300">
             <div className="w-64 border-r pr-4">
                 <div className="mb-6 flex flex-col items-center">
                     <AnimatedProfile
-                        imageUrl="https://images.unsplash.com/photo-1532074205216-d0e1f4b87368?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2ZpbHxlbnwwfHwwfHx8MA%3D%3D"
+                        imageUrl={profile.profileImage || "/placeholder-user.jpg"}
                         size="xl"
                         showSupportBadge={true}
                         variant="ripple"
+                        onImageUpload={handleImageUpload}
                     />
                     <h2 className="text-xl font-semibold mt-2">{profile.nickname}</h2>
                     <p className="text-gray-500">{profile.location}</p>
