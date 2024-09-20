@@ -7,7 +7,7 @@ interface ProfileProps {
     imageUrl: string;
     showSupportBadge?: boolean;
     variant?: 'default' | 'neon' | 'ripple' | 'outline' | 'rainbow' | 'pixelate' | 'liquid' | 'bounce' | 'flip' | 'morph' | 'hologram';
-    size?: 'sm' | 'md' | 'lg';
+    size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
 export const AnimatedProfile: React.FC<ProfileProps> = ({
@@ -21,6 +21,7 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
         sm: 'w-8 h-8',
         md: 'w-10 h-10',
         lg: 'w-14 h-14',
+        xl: 'w-24 h-24',
     };
 
     const badgeSize = (sizeStyle) => {
@@ -28,6 +29,7 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
             case 'sm': return 'w-2 h-2'
             case 'md': return 'w-3 h-3'
             case 'lg': return 'w-4 h-4'
+            case 'xl': return 'w-6 h-6'
         }
     }
 
@@ -36,6 +38,7 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
             case 'sm': return 'p-[2px]'
             case 'md': return 'p-[2px]'
             case 'lg': return 'p-[3px]'
+            case 'xl': return 'p-[4px]'
         }
     }
 
