@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Icons } from "@/components/ui/icons"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useToast } from '@/hooks/use-toast'
 
 type SignUpForm = {
     username: string
@@ -18,6 +19,7 @@ export default function SignUp() {
     const [form, setForm] = useState<SignUpForm>({ username: "", email: "", password: "" })
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const toaster = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -32,6 +34,7 @@ export default function SignUp() {
             })
 
             if (response.ok) {
+                toaster.toast({ title: "Successful! Login now...", duration: 3000 })
                 router.replace('/')
                 router.refresh()
             } else {

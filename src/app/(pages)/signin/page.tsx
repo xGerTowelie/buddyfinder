@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Icons } from "@/components/ui/icons"
 import Link from 'next/link'
+import { useToast } from '@/hooks/use-toast'
 
 type SignInForm = {
     username: string,
@@ -18,6 +19,7 @@ export default function SignIn() {
     const [form, setForm] = useState<SignInForm>({ username: "", password: "" })
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
+    const toaster = useToast()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -33,6 +35,7 @@ export default function SignIn() {
                 console.error(result.error)
             } else {
                 // Clean Slate at Home
+                toaster.toast({ title: `Welcome back ${form.username}!`, duration: 3000 })
                 router.replace('/')
                 router.refresh()
             }

@@ -15,7 +15,7 @@ import { updateProfile, getProfile } from "@/server/profile-actions"
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("general")
     const [profile, setProfile] = useState({
-        id: 0,
+        id: undefined,
         nickname: "",
         keywords: [],
         topKeywords: [],

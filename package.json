@@ -10,7 +10,8 @@
     "studio": "dotenv -e .env.local -- npx prisma studio",
     "pushdb": "dotenv -e .env.local -- npx prisma db push && npx prisma generate",
     "docker": "docker compose --env-file .env.local up",
-    "seed": "dotenv -e .env.local -- ts-node --project tsconfig.seed.json prisma/seed.ts"
+    "seed": "dotenv -e .env.local -- ts-node --project tsconfig.seed.json prisma/seed.ts",
+    "clear": "dotenv -e .env.local -- ts-node --project tsconfig.seed.json prisma/clear-db.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
