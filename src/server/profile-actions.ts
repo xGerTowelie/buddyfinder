@@ -1,56 +1,56 @@
 'use server'
 
 import prisma from '@/lib/prisma'
-import { User } from '@prisma/client'
 import { getLoggedInUser } from './actions'
+import { Profile, ProfileSchema } from '@/lib/validation'
 
-export async function updateProfile(profileData: any) {
+export async function updateProfile(profileData: Profile) {
     const user = await getLoggedInUser()
 
-    console.log("profile data sent via form:", profileData)
-
     try {
+        const validatedData = ProfileSchema.parse(profileData)
+
         await prisma.user.update({
             where: { id: user.id },
             data: {
-                nickname: profileData.nickname,
-                age: profileData.age,
-                gender: profileData.gender,
-                location: profileData.location,
-                showAge: profileData.showAge,
-                showGender: profileData.showGender,
-                showLocation: profileData.showLocation,
+                nickname: validatedData.nickname,
+                age: validatedData.age,
+                gender: validatedData.gender,
+                location: validatedData.location,
+                showAge: validatedData.showAge,
+                showGender: validatedData.showGender,
+                showLocation: validatedData.showLocation,
             },
         })
 
         // Update keywords
-        /* await prisma.keyword.deleteMany({ where: { userId: user.id } })
+        await prisma.keyword.deleteMany({ where: { userId: user.id } })
         await prisma.keyword.createMany({
-            data: profileData.keywords.map((keyword: any) => ({
+            data: validatedData.keywords.map((keyword) => ({
                 ...keyword,
                 userId: user.id,
             })),
-        }) */
+        })
 
         // Update top keywords
-        /* await prisma.topKeyword.deleteMany({ where: { userId: user.id } })
+        await prisma.topKeyword.deleteMany({ where: { userId: user.id } })
         await prisma.topKeyword.createMany({
-            data: profileData.topKeywords.map((keyword: any, index: number) => ({
+            data: validatedData.topKeywords.map((keyword, index) => ({
                 ...keyword,
                 rank: index + 1,
                 userId: user.id,
             })),
-        }) */
+        })
 
         // Update icebreakers
-        /*         await prisma.icebreaker.deleteMany({ where: { userId } })
-                await prisma.icebreaker.createMany({
-                    data: profileData.icebreakers.map((question: string) => ({
-                        question,
-                        userId: user.id,
-                    })),
-                })
-         */
+        await prisma.icebreaker.deleteMany({ where: { userId: user.id } })
+        await prisma.icebreaker.createMany({
+            data: validatedData.icebreakers.map((question) => ({
+                question,
+                userId: user.id,
+            })),
+        })
+
         return { success: true }
     } catch (error) {
         console.error('Failed to update profile:', error)
@@ -58,18 +58,7 @@ export async function updateProfile(profileData: any) {
     }
 }
 
-export type SimpleKeyword = {
-    word: string;
-    description: string;
-}
-
-export type FullProfile = User & {
-    keywords: SimpleKeyword[];
-    topKeywords: SimpleKeyword[];
-    icebreakers: string[];
-}
-
-export async function getProfile(): Promise<FullProfile | null> {
+export async function getProfile(): Promise<Profile | null> {
     const user = await getLoggedInUser()
 
     try {
