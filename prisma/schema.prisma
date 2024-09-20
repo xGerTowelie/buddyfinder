@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// prisma/schema.prisma
 
 generator client {
     provider = "prisma-client-js"
@@ -14,18 +10,42 @@ datasource db {
 }
 
 model User {
-    id       String    @id @default(cuid())
-    name     String    @unique
-    email    String    @unique
-    password String
-    keywords Keyword[]
+    id           Int          @id @default(autoincrement())
+    nickname     String
+    age          Int?
+    gender       String?
+    location     String?
+    showAge      Boolean      @default(true)
+    showGender   Boolean      @default(true)
+    showLocation Boolean      @default(true)
+    keywords     Keyword[]
+    topKeywords  TopKeyword[]
+    icebreakers  Icebreaker[]
 }
 
 model Keyword {
-    id     Int    @id @default(autoincrement())
-    text   String
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
-
-    @@unique([text, userId])
+    id          Int    @id @default(autoincrement())
+    word        String
+    description String
+    userId      Int
+    user        User   @relation(fields: [userId], references: [id])
 }
+
+model TopKeyword {
+    id          Int    @id @default(autoincrement())
+    word        String
+    description String
+    rank        Int
+    userId      Int
+    user        User   @relation(fields: [userId], references: [id])
+
+    @@unique([userId, rank])
+}
+
+model Icebreaker {
+    id       Int    @id @default(autoincrement())
+    question String
+    userId   Int
+    user     User   @relation(fields: [userId], references: [id])
+}
+

@@ -1,6 +1,8 @@
-"use client"
+// app/profile/page.tsx
 
-import { useState } from "react"
+'use client'
+
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -8,33 +10,34 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { AnimatedProfile } from "@/components/Profiles"
 import { PlusIcon, XIcon } from "lucide-react"
+import { updateProfile, getProfile } from "@/server/profile-actions"
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("general")
     const [profile, setProfile] = useState({
-        nickname: "JohnDoe",
-        keywords: [
-            { word: "Music", description: "I've been playing guitar for 10 years and love all genres of music." },
-            { word: "Coding", description: "I'm a full-stack developer with a passion for React and Node.js." },
-        ],
-        topKeywords: [
-            { word: "Music", description: "I've been playing guitar for 10 years and love all genres of music." },
-            { word: "Coding", description: "I'm a full-stack developer with a passion for React and Node.js." },
-            { word: "Travel", description: "I've visited 20 countries and love experiencing new cultures." },
-            { word: "Photography", description: "I enjoy capturing moments through my DSLR camera." },
-            { word: "Cooking", description: "I love experimenting with fusion cuisine in my free time." },
-        ],
-        icebreakers: [
-            "What's your favorite travel destination and why?",
-            "If you could master any skill instantly, what would it be?",
-        ],
-        age: 28,
-        gender: "Male",
-        location: "New York, USA",
+        id: 0,
+        nickname: "",
+        keywords: [],
+        topKeywords: [],
+        icebreakers: [],
+        age: 0,
+        gender: "",
+        location: "",
         showAge: true,
         showGender: true,
         showLocation: true,
     })
+
+    useEffect(() => {
+        const fetchProfile = async () => {
+            const userId = 1 // Use the first user in the database for now
+            const fetchedProfile = await getProfile(userId)
+            if (fetchedProfile) {
+                setProfile(fetchedProfile)
+            }
+        }
+        fetchProfile()
+    }, [])
 
     const tabs = [
         { id: "general", label: "General" },
@@ -78,6 +81,15 @@ export default function ProfilePage() {
     const removeIcebreaker = (index: number) => {
         const newIcebreakers = profile.icebreakers.filter((_, i) => i !== index)
         setProfile({ ...profile, icebreakers: newIcebreakers })
+    }
+
+    const handleSaveProfile = async () => {
+        const result = await updateProfile(profile.id, profile)
+        if (result.success) {
+            alert('Profile updated successfully')
+        } else {
+            alert('Failed to update profile')
+        }
     }
 
     return (
@@ -257,7 +269,7 @@ export default function ProfilePage() {
                         </div>
                     </div>
                 )}
-                <Button className="mt-8 w-full">Save Profile</Button>
+                <Button className="mt-8 w-full" onClick={handleSaveProfile}>Save Profile</Button>
             </div>
         </div>
     )
