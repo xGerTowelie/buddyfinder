@@ -6,11 +6,13 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchIcon } from 'lucide-react'
 import { getKeywordSuggestions } from '@/server/keyword-actions'
+import { usePathname } from 'next/navigation'
 
 export function SearchBar({ hideOnSearch = false }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [suggestions, setSuggestions] = useState<string[]>([])
     const router = useRouter()
+    const pathname = usePathname()
 
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -24,6 +26,10 @@ export function SearchBar({ hideOnSearch = false }) {
 
         fetchSuggestions()
     }, [searchTerm])
+
+    if (hideOnSearch && pathname === '/search') {
+        return null
+    }
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
