@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent } from "@/components/ui/card"
 import { AnimatedProfile } from "@/components/Profiles"
 import { SearchIcon } from "lucide-react"
+import { SearchBar } from "@/components/Searchbar"
 
 const mockUsers = [
     { id: 1, name: "Alice Johnson", interests: ["Music", "Travel", "Photography"], location: "New York, USA" },
@@ -35,19 +36,7 @@ export default function SearchMockup1() {
         <div className="flex h-[calc(100vh-120px)] bg-white px-8 py-4 rounded-xl overflow-hidden shadow-sm border-[1px] border-neutral-200 shadow-slate-300">
             <div className="container mx-auto px-4 py-8">
                 <h1 className="text-3xl font-bold mb-6">Find New Buddies</h1>
-                <div className="flex mb-8">
-                    <Input
-                        type="text"
-                        placeholder="Search by interest, name, or location..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="flex-1 mr-2"
-                    />
-                    <Button onClick={handleSearch}>
-                        <SearchIcon className="mr-2 h-4 w-4" />
-                        Search
-                    </Button>
-                </div>
+                <SearchBar />
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                     {filteredUsers.map((user) => (
                         <Card key={user.id}>

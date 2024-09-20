@@ -1,11 +1,12 @@
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { BellIcon, SearchIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon } from "lucide-react"
+import { BellIcon, SearchIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, Search } from "lucide-react"
 import type { Metadata } from "next"
 import "../globals.css"
 import Link from "next/link"
 import { AnimatedProfile } from "@/components/Profiles"
+import { SearchBar } from "@/components/Searchbar"
 
 export const metadata: Metadata = {
     title: "Create Next App",
@@ -31,6 +32,12 @@ export default function RootLayout({
                             </Link>
                         </li>
                         <li>
+                            <Link href="/search">
+                                <Button variant="ghost" className="w-full justify-start"><Search className="mr-2 h-4 w-4" />Search</Button>
+                            </Link>
+                        </li>
+
+                        <li>
                             <Link href="/requests">
                                 <Button variant="ghost" className="w-full justify-start"><FileTextIcon className="mr-2 h-4 w-4" />Requests</Button>
                             </Link>
@@ -52,8 +59,7 @@ export default function RootLayout({
                 <header className="bg-white h-16 py-4 px-8 flex gap-3 justify-between items-center border-b">
                     <Button variant="ghost" className="md:hidden"><MenuIcon className="h-6 w-6" /></Button>
                     <div className="flex items-center space-x-4 flex-1">
-                        <Input type="text" placeholder="Search..." className="w-full md:w-96" />
-                        <Button variant="ghost" size="icon"><SearchIcon className="h-4 w-4" /></Button>
+                        <SearchBar hideOnSearch={true} />
                     </div>
                     <Button variant="ghost" size="icon"><BellIcon className="h-4 w-4" /></Button>
                     <AnimatedProfile
