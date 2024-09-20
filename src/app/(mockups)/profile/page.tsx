@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button"
 import { AnimatedProfile } from "@/components/Profiles"
 import { updateProfile, getProfile } from "@/server/profile-actions"
 import { useToast } from "@/hooks/use-toast"
+import { ZodError } from "zod"
 import { Profile, ProfileSchema } from "@/lib/validation"
 import { GeneralSection, IcebreakersSection, KeywordsSection, PrivacySection, TopKeywordsSection } from "@/components/profile"
+
 
 const tabs = [
     { id: "general", label: "General" },
@@ -15,6 +17,7 @@ const tabs = [
     { id: "icebreakers", label: "Icebreakers" },
     { id: "privacy", label: "Privacy" },
 ]
+
 
 const defaultProfile: Profile = {
     nickname: "",
@@ -25,7 +28,7 @@ const defaultProfile: Profile = {
     showGender: false,
     showLocation: false,
     keywords: [],
-    topKeywords: [],
+    topKeywords: [null, null, null, null, null],
     icebreakers: [],
 }
 
@@ -38,7 +41,9 @@ export default function ProfilePage() {
         const fetchProfile = async () => {
             const fetchedProfile = await getProfile()
             if (fetchedProfile) {
-                setProfile(fetchedProfile)
+                // Ensure topKeywords array has exactly 5 elements, fill with null if necessary
+                const topKeywords = fetchedProfile.topKeywords.concat(Array(5).fill(null)).slice(0, 5);
+                setProfile({ ...fetchedProfile, topKeywords });
             }
         }
         fetchProfile()
@@ -60,9 +65,15 @@ export default function ProfilePage() {
             }
         } catch (error) {
             console.error('Failed to update profile:', error)
+            let errorMessage = "An unknown error occurred";
+            if (error instanceof ZodError) {
+                errorMessage = error.issues.map(issue => issue.message).join(", ");
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
             toast({
                 title: "Failed to update profile",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
+                description: errorMessage,
                 variant: "destructive",
             })
         }
