@@ -39,7 +39,7 @@ const authConfig: NextAuthConfig = {
                 if (user) {
                     return {
                         id: user.id,
-                        name: user.username,
+                        username: user.username,
                         email: user.email,
                     }
                 }

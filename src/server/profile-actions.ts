@@ -1,13 +1,17 @@
-// app/actions/profile-actions.ts
-
 'use server'
 
 import prisma from '@/lib/prisma'
+import { User } from '@prisma/client'
+import { getLoggedInUser } from './actions'
 
-export async function updateProfile(userId: string, profileData: any) {
+export async function updateProfile(profileData: any) {
+    const user = await getLoggedInUser()
+
+    console.log("profile data sent via form:", profileData)
+
     try {
         await prisma.user.update({
-            where: { id: userId },
+            where: { id: user.id },
             data: {
                 nickname: profileData.nickname,
                 age: profileData.age,
@@ -20,33 +24,33 @@ export async function updateProfile(userId: string, profileData: any) {
         })
 
         // Update keywords
-        await prisma.keyword.deleteMany({ where: { userId } })
+        /* await prisma.keyword.deleteMany({ where: { userId: user.id } })
         await prisma.keyword.createMany({
             data: profileData.keywords.map((keyword: any) => ({
                 ...keyword,
-                userId,
+                userId: user.id,
             })),
-        })
+        }) */
 
         // Update top keywords
-        await prisma.topKeyword.deleteMany({ where: { userId } })
+        /* await prisma.topKeyword.deleteMany({ where: { userId: user.id } })
         await prisma.topKeyword.createMany({
             data: profileData.topKeywords.map((keyword: any, index: number) => ({
                 ...keyword,
                 rank: index + 1,
-                userId,
+                userId: user.id,
             })),
-        })
+        }) */
 
         // Update icebreakers
-        await prisma.icebreaker.deleteMany({ where: { userId } })
-        await prisma.icebreaker.createMany({
-            data: profileData.icebreakers.map((question: string) => ({
-                question,
-                userId,
-            })),
-        })
-
+        /*         await prisma.icebreaker.deleteMany({ where: { userId } })
+                await prisma.icebreaker.createMany({
+                    data: profileData.icebreakers.map((question: string) => ({
+                        question,
+                        userId: user.id,
+                    })),
+                })
+         */
         return { success: true }
     } catch (error) {
         console.error('Failed to update profile:', error)
@@ -54,10 +58,23 @@ export async function updateProfile(userId: string, profileData: any) {
     }
 }
 
-export async function getProfile(userId: string) {
+export type SimpleKeyword = {
+    word: string;
+    description: string;
+}
+
+export type FullProfile = User & {
+    keywords: SimpleKeyword[];
+    topKeywords: SimpleKeyword[];
+    icebreakers: string[];
+}
+
+export async function getProfile(): Promise<FullProfile | null> {
+    const user = await getLoggedInUser()
+
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: userId },
+        const profile = await prisma.user.findUnique({
+            where: { id: user.id },
             include: {
                 keywords: true,
                 topKeywords: {
@@ -67,14 +84,15 @@ export async function getProfile(userId: string) {
             },
         })
 
-        if (!user) {
-            throw new Error('User not found')
+        if (!profile) {
+            throw new Error('Profile not found')
         }
 
         return {
-            ...user,
-            topKeywords: user.topKeywords.map(({ rank, ...rest }) => rest),
-            icebreakers: user.icebreakers.map((icebreaker) => icebreaker.question),
+            ...profile,
+            keywords: profile.keywords.map(({ id, userId, ...rest }) => rest),
+            topKeywords: profile.topKeywords.map(({ id, userId, rank, ...rest }) => rest),
+            icebreakers: profile.icebreakers.map((icebreaker) => icebreaker.question),
         }
     } catch (error) {
         console.error('Failed to get profile:', error)

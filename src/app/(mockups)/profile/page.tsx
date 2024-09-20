@@ -10,34 +10,33 @@ import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { AnimatedProfile } from "@/components/Profiles"
 import { PlusIcon, XIcon } from "lucide-react"
-import { updateProfile, getProfile } from "@/server/profile-actions"
+import { updateProfile, getProfile, FullProfile } from "@/server/profile-actions"
+import { useToast } from "@/hooks/use-toast"
 
 export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("general")
-    const [profile, setProfile] = useState({
-        id: undefined,
-        nickname: "",
-        keywords: [],
-        topKeywords: [],
-        icebreakers: [],
-        age: 0,
-        gender: "",
-        location: "",
-        showAge: true,
-        showGender: true,
-        showLocation: true,
-    })
+    const [profile, setProfile] = useState<FullProfile | null>()
+    const toaster = useToast()
 
     useEffect(() => {
         const fetchProfile = async () => {
-            const userId = 1 // Use the first user in the database for now
-            const fetchedProfile = await getProfile(userId)
+            const fetchedProfile = await getProfile()
+            console.log('profile fetched:', fetchedProfile)
             if (fetchedProfile) {
                 setProfile(fetchedProfile)
             }
         }
         fetchProfile()
     }, [])
+
+    if (!profile) {
+        return (
+            <div className="flex h-[calc(100vh-120px)] bg-white px-8 py-4 rounded-xl overflow-hidden shadow-sm border-[1px] border-neutral-200 shadow-slate-300">
+                Something went wrong. We couldnt find your user. Try relog!
+            </div>
+        )
+    }
+
 
     const tabs = [
         { id: "general", label: "General" },
@@ -48,6 +47,8 @@ export default function ProfilePage() {
     ]
 
     const handleKeywordChange = (index: number, field: 'word' | 'description', value: string) => {
+        if (!profile) return
+
         const newKeywords = [...profile.keywords]
         newKeywords[index][field] = value
         setProfile({ ...profile, keywords: newKeywords })
@@ -84,11 +85,11 @@ export default function ProfilePage() {
     }
 
     const handleSaveProfile = async () => {
-        const result = await updateProfile(profile.id, profile)
+        const result = await updateProfile(profile)
         if (result.success) {
-            alert('Profile updated successfully')
+            toaster.toast({ title: "Profile updated successfully" })
         } else {
-            alert('Failed to update profile')
+            toaster.toast({ title: "Failed to update profile" })
         }
     }
 
