@@ -5,7 +5,7 @@
 import { useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { BellIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, MessageSquare, LogOut } from "lucide-react"
+import { BellIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, MessageSquare, LogOut, Search } from "lucide-react"
 import Link from "next/link"
 import { AnimatedProfile } from "@/components/Profiles"
 import { SearchBar } from '@/components/Searchbar'
@@ -35,6 +35,11 @@ export default function RootLayout({
                         <li>
                             <Link href="/profile">
                                 <Button variant="ghost" className="w-full justify-start"><UserIcon className="mr-2 h-4 w-4" />Profile</Button>
+                            </Link>
+                        </li>
+                        <li>
+                            <Link href="/search">
+                                <Button variant="ghost" className="w-full justify-start"><Search className="mr-2 h-4 w-4" />Search</Button>
                             </Link>
                         </li>
                         <li>

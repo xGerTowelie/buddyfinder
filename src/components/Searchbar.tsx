@@ -1,12 +1,17 @@
-// components/SearchBar.tsx
-
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchIcon, X } from 'lucide-react'
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipProvider,
+    TooltipTrigger,
+} from "@/components/ui/tooltip"
+import { Badge } from "@/components/ui/badge"
 import { getKeywordSuggestions } from '@/server/keyword-actions'
 
 export function SearchBar({ hideOnSearch = false }) {
@@ -15,6 +20,7 @@ export function SearchBar({ hideOnSearch = false }) {
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
     const router = useRouter()
     const pathname = usePathname()
+    const inputRef = useRef<HTMLInputElement>(null)
 
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -38,10 +44,15 @@ export function SearchBar({ hideOnSearch = false }) {
     const addKeywordToSearch = (keyword: string) => {
         setSelectedKeywords(prev => [...prev, keyword])
         setSearchTerm('')
+        inputRef.current?.focus()
     }
 
     const removeKeyword = (keyword: string) => {
         setSelectedKeywords(prev => prev.filter(k => k !== keyword))
+    }
+
+    const clearAllKeywords = () => {
+        setSelectedKeywords([])
     }
 
     if (hideOnSearch && pathname === '/search') {
@@ -49,35 +60,63 @@ export function SearchBar({ hideOnSearch = false }) {
     }
 
     return (
-        <form onSubmit={handleSearch} className="relative">
-            <div className="flex items-center flex-wrap gap-2 p-2 border rounded-md">
-                {selectedKeywords.map((keyword, index) => (
-                    <div key={index} className="flex items-center bg-primary text-primary-foreground px-2 py-1 rounded-full text-sm">
-                        {keyword}
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            className="ml-1 p-0 h-4 w-4"
-                            onClick={() => removeKeyword(keyword)}
-                        >
-                            <X className="h-3 w-3" />
-                        </Button>
-                    </div>
-                ))}
+        <form onSubmit={handleSearch} className="relative flex items-center w-full">
+            <div className="relative flex-grow">
                 <Input
+                    ref={inputRef}
                     type="text"
-                    placeholder="Search..."
+                    placeholder={selectedKeywords.length > 0 ? "" : "Search..."}
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="flex-grow border-none shadow-none"
+                    className="pr-16"
                 />
-                <Button type="submit" variant="ghost" size="icon">
-                    <SearchIcon className="h-4 w-4" />
-                </Button>
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Badge
+                                variant="secondary"
+                                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                            >
+                                {selectedKeywords.length}
+                            </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <div className="flex flex-wrap gap-1 max-w-xs">
+                                {selectedKeywords.map((keyword, index) => (
+                                    <Badge key={index} variant="outline" className="flex items-center gap-1">
+                                        {keyword}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            size="sm"
+                                            className="h-4 w-4 p-0"
+                                            onClick={() => removeKeyword(keyword)}
+                                        >
+                                            <X className="h-3 w-3" />
+                                        </Button>
+                                    </Badge>
+                                ))}
+                                {selectedKeywords.length > 0 && (
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={clearAllKeywords}
+                                        className="text-xs"
+                                    >
+                                        Clear All
+                                    </Button>
+                                )}
+                            </div>
+                        </TooltipContent>
+                    </Tooltip>
+                </TooltipProvider>
             </div>
+            <Button type="submit" variant="ghost" size="icon" className="ml-2">
+                <SearchIcon className="h-4 w-4" />
+            </Button>
             {suggestions.length > 0 && (
-                <div className="absolute z-10 w-full bg-white border border-gray-200 mt-1 rounded-md shadow-lg">
+                <div className="absolute z-10 w-full bg-white border border-gray-200 mt-1 rounded-md shadow-lg top-full">
                     {suggestions.map((suggestion, index) => (
                         <div
                             key={index}
