@@ -1,5 +1,6 @@
+// components/Profiles.tsx
 import React, { useState } from 'react';
-import { Badge, BadgeCheck, Heart, Edit } from 'lucide-react';
+import { BadgeCheck, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
@@ -246,33 +247,3 @@ export const AnimatedProfile: React.FC<ProfileProps> = ({
         </Dialog>
     );
 };
-
-const ProfileExamples: React.FC = () => {
-
-    const variants: ProfileProps['variant'][] = [
-        'default', 'neon', 'ripple', 'outline', 'flip', 'morph', 'liquid', 'bounce', 'rainbow', 'pixelate', 'hologram'
-    ];
-
-    const sizes: ProfileProps['size'][] = ['sm', 'md', 'lg'];
-
-    return (
-        <div className="flex flex-wrap gap-8 p-4">
-            {variants.map((variant) => (
-                <div key={variant} className="flex flex-col items-center gap-2">
-                    <h3 className="text-lg font-semibold capitalize">{variant}</h3>
-                    {sizes.map((size) => (
-                        <AnimatedProfile
-                            key={`${variant}-${size}`}
-                            imageUrl="https://images.unsplash.com/photo-1532074205216-d0e1f4b87368?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fHByb2ZpbHxlbnwwfHwwfHx8MA%3D%3D"
-                            showSupportBadge={true}
-                            size={size}
-                            variant={variant}
-                        />
-                    ))}
-                </div>
-            ))}
-        </div>
-    );
-};
-
-export default ProfileExamples;

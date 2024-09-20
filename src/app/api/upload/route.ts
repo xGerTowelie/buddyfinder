@@ -1,3 +1,4 @@
+// app/api/upload/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { writeFile } from 'fs/promises'
 import path from 'path'
@@ -20,7 +21,7 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        // Save file to your VPS
+        // Save file to a public directory
         const uploadDir = path.join(process.cwd(), 'public', 'uploads')
         const uniqueFilename = `${user.id}-${Date.now()}-${file.name}`
         const filepath = path.join(uploadDir, uniqueFilename)

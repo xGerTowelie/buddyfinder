@@ -1,3 +1,4 @@
+// app/profile/page.tsx
 'use client'
 
 import { useState, useEffect } from "react"
@@ -8,15 +9,6 @@ import { useToast } from "@/hooks/use-toast"
 import { ZodError } from "zod"
 import { Profile, ProfileSchema } from "@/lib/validation"
 import { GeneralSection, IcebreakersSection, KeywordsSection, PrivacySection, TopKeywordsSection } from "@/components/profile"
-
-const tabs = [
-    { id: "general", label: "General" },
-    { id: "keywords", label: "Keywords" },
-    { id: "topKeywords", label: "Top Keywords" },
-    { id: "icebreakers", label: "Icebreakers" },
-    { id: "privacy", label: "Privacy" },
-]
-
 
 const defaultProfile: Profile = {
     nickname: "",
@@ -29,6 +21,7 @@ const defaultProfile: Profile = {
     keywords: [],
     topKeywords: [null, null, null, null, null],
     icebreakers: [],
+    profileImage: null,
 }
 
 export default function ProfilePage() {
@@ -40,7 +33,6 @@ export default function ProfilePage() {
         const fetchProfile = async () => {
             const fetchedProfile = await getProfile()
             if (fetchedProfile) {
-                // Ensure topKeywords array has exactly 5 elements, fill with null if necessary
                 const topKeywords = fetchedProfile.topKeywords.concat(Array(5).fill(null)).slice(0, 5);
                 setProfile({ ...fetchedProfile, topKeywords });
             }
@@ -48,11 +40,32 @@ export default function ProfilePage() {
         fetchProfile()
     }, [])
 
+    const handleImageUpload = async (url: string) => {
+        try {
+            const updatedProfile = { ...profile, profileImage: url };
+            const result = await updateProfile(updatedProfile);
+            if (result.success) {
+                setProfile(updatedProfile);
+                toast({
+                    title: "Profile image updated",
+                    description: "Your profile image has been successfully updated.",
+                });
+            } else {
+                throw new Error(result.error || "Failed to update profile image");
+            }
+        } catch (error) {
+            console.error('Error updating profile image:', error);
+            toast({
+                title: "Failed to update profile image",
+                description: error instanceof Error ? error.message : "An unknown error occurred",
+                variant: "destructive",
+            });
+        }
+    }
+
     const handleSaveProfile = async () => {
         try {
-            // Validate the profile data
             ProfileSchema.parse(profile)
-
             const result = await updateProfile(profile)
             if (result.success) {
                 toast({
@@ -78,29 +91,6 @@ export default function ProfilePage() {
         }
     }
 
-    const handleImageUpload = async (url: string) => {
-        try {
-            const updatedProfile = { ...profile, profileImage: url };
-            const result = await updateProfile(updatedProfile);
-            if (result.success) {
-                setProfile(updatedProfile);
-                toast({
-                    title: "Profile image updated",
-                    description: "Your profile image has been successfully updated.",
-                });
-            } else {
-                throw new Error(result.error || "Failed to update profile image");
-            }
-        } catch (error) {
-            console.error('Error updating profile image:', error);
-            toast({
-                title: "Failed to update profile image",
-                description: error instanceof Error ? error.message : "An unknown error occurred",
-                variant: "destructive",
-            });
-        }
-    }
-
     return (
         <div className="flex h-[calc(100vh-120px)] bg-white px-8 py-4 rounded-xl overflow-hidden shadow-sm border-[1px] border-neutral-200 shadow-slate-300">
             <div className="w-64 border-r pr-4">
@@ -116,14 +106,13 @@ export default function ProfilePage() {
                     <p className="text-gray-500">{profile.location}</p>
                 </div>
                 <nav className="space-y-2">
-                    {tabs.map((tab) => (
+                    {["general", "keywords", "topKeywords", "icebreakers", "privacy"].map((tab) => (
                         <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`w-full px-4 py-2 text-left rounded-lg ${activeTab === tab.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                                }`}
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            className={`w-full px-4 py-2 text-left rounded-lg ${activeTab === tab ? "bg-primary text-primary-foreground" : "hover:bg-muted"}`}
                         >
-                            {tab.label}
+                            {tab.charAt(0).toUpperCase() + tab.slice(1)}
                         </button>
                     ))}
                 </nav>
