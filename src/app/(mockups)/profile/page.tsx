@@ -4,113 +4,255 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-
-import { UserIcon, SettingsIcon, TagIcon, MoreHorizontalIcon } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
+import { AnimatedProfile } from "@/components/Profiles"
+import { PlusIcon, XIcon } from "lucide-react"
 
-export default function ProfileSettingsPage() {
+export default function ProfilePage() {
     const [activeTab, setActiveTab] = useState("general")
+    const [profile, setProfile] = useState({
+        nickname: "JohnDoe",
+        keywords: [
+            { word: "Music", description: "I've been playing guitar for 10 years and love all genres of music." },
+            { word: "Coding", description: "I'm a full-stack developer with a passion for React and Node.js." },
+        ],
+        topKeywords: [
+            { word: "Music", description: "I've been playing guitar for 10 years and love all genres of music." },
+            { word: "Coding", description: "I'm a full-stack developer with a passion for React and Node.js." },
+            { word: "Travel", description: "I've visited 20 countries and love experiencing new cultures." },
+            { word: "Photography", description: "I enjoy capturing moments through my DSLR camera." },
+            { word: "Cooking", description: "I love experimenting with fusion cuisine in my free time." },
+        ],
+        icebreakers: [
+            "What's your favorite travel destination and why?",
+            "If you could master any skill instantly, what would it be?",
+        ],
+        age: 28,
+        gender: "Male",
+        location: "New York, USA",
+        showAge: true,
+        showGender: true,
+        showLocation: true,
+    })
 
     const tabs = [
-        { id: "general", label: "General", icon: UserIcon },
-        { id: "optional", label: "Optional", icon: SettingsIcon },
-        { id: "keywords", label: "Keywords", icon: TagIcon },
-        { id: "other", label: "Other", icon: MoreHorizontalIcon },
+        { id: "general", label: "General" },
+        { id: "keywords", label: "Keywords" },
+        { id: "topKeywords", label: "Top Keywords" },
+        { id: "icebreakers", label: "Icebreakers" },
+        { id: "privacy", label: "Privacy" },
     ]
+
+    const handleKeywordChange = (index: number, field: 'word' | 'description', value: string) => {
+        const newKeywords = [...profile.keywords]
+        newKeywords[index][field] = value
+        setProfile({ ...profile, keywords: newKeywords })
+    }
+
+    const handleTopKeywordChange = (index: number, field: 'word' | 'description', value: string) => {
+        const newTopKeywords = [...profile.topKeywords]
+        newTopKeywords[index][field] = value
+        setProfile({ ...profile, topKeywords: newTopKeywords })
+    }
+
+    const addKeyword = () => {
+        setProfile({
+            ...profile,
+            keywords: [...profile.keywords, { word: "", description: "" }]
+        })
+    }
+
+    const removeKeyword = (index: number) => {
+        const newKeywords = profile.keywords.filter((_, i) => i !== index)
+        setProfile({ ...profile, keywords: newKeywords })
+    }
+
+    const addIcebreaker = () => {
+        setProfile({
+            ...profile,
+            icebreakers: [...profile.icebreakers, ""]
+        })
+    }
+
+    const removeIcebreaker = (index: number) => {
+        const newIcebreakers = profile.icebreakers.filter((_, i) => i !== index)
+        setProfile({ ...profile, icebreakers: newIcebreakers })
+    }
 
     return (
         <div className="flex h-[calc(100vh-120px)] bg-white px-8 py-4 rounded-xl overflow-hidden shadow-sm border-[1px] border-neutral-200 shadow-slate-300">
-            <div className="container mx-auto">
-                <h1 className="text-2xl font-bold mb-6">Profile Settings</h1>
-                <div className="flex flex-col md:flex-row gap-6">
-                    <nav className="w-full md:w-64 space-y-2">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center space-x-2 w-full px-4 py-2 text-left rounded-lg ${activeTab === tab.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                                    }`}
-                            >
-                                <tab.icon className="w-5 h-5" />
-                                <span>{tab.label}</span>
-                            </button>
-                        ))}
-                    </nav>
-                    <div className="flex-1">
-                        {activeTab === "general" && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">General Information</h2>
-                                <div>
-                                    <Label htmlFor="name">Full Name</Label>
-                                    <Input id="name" defaultValue="John Doe" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="username">Username</Label>
-                                    <Input id="username" defaultValue="johndoe" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input id="email" type="email" defaultValue="john@example.com" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="bio">Bio</Label>
-                                    <Textarea id="bio" defaultValue="I'm a software developer." />
-                                </div>
-                                <Button>Update General Information</Button>
-                            </div>
-                        )}
-                        {activeTab === "optional" && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">Optional Information</h2>
-                                <div>
-                                    <Label htmlFor="location">Location</Label>
-                                    <Input id="location" placeholder="e.g., New York, USA" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="website">Website</Label>
-                                    <Input id="website" type="url" placeholder="https://example.com" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="company">Company</Label>
-                                    <Input id="company" placeholder="Company name" />
-                                </div>
-                                <Button>Update Optional Information</Button>
-                            </div>
-                        )}
-                        {activeTab === "keywords" && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">Keywords</h2>
-                                <div>
-                                    <Label htmlFor="skills">Skills (comma-separated)</Label>
-                                    <Input id="skills" placeholder="e.g., JavaScript, React, Node.js" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="interests">Interests (comma-separated)</Label>
-                                    <Input id="interests" placeholder="e.g., Web Development, AI, Machine Learning" />
-                                </div>
-                                <Button>Update Keywords</Button>
-                            </div>
-                        )}
-                        {activeTab === "other" && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">Other Settings</h2>
-                                <div>
-                                    <Label htmlFor="language">Preferred Language</Label>
-                                    <Input id="language" defaultValue="English" />
-                                </div>
-                                <div>
-                                    <Label htmlFor="timezone">Timezone</Label>
-                                    <Input id="timezone" defaultValue="UTC-5" />
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <Input id="publicProfile" type="checkbox" className="w-4 h-4" />
-                                    <Label htmlFor="publicProfile">Make profile public</Label>
-                                </div>
-                                <Button>Update Other Settings</Button>
-                            </div>
-                        )}
-                    </div>
+            <div className="w-64 border-r pr-4">
+                <div className="mb-6 flex flex-col items-center">
+                    <AnimatedProfile imageUrl="/placeholder-user.jpg" size="lg" />
+                    <h2 className="text-xl font-semibold mt-2">{profile.nickname}</h2>
+                    <p className="text-gray-500">{profile.location}</p>
                 </div>
+                <nav className="space-y-2">
+                    {tabs.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id)}
+                            className={`w-full px-4 py-2 text-left rounded-lg ${activeTab === tab.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                                }`}
+                        >
+                            {tab.label}
+                        </button>
+                    ))}
+                </nav>
+            </div>
+            <div className="flex-1 pl-8 overflow-y-auto">
+                {activeTab === "general" && (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">General Information</h2>
+                        <div>
+                            <Label htmlFor="nickname">Nickname</Label>
+                            <Input
+                                id="nickname"
+                                value={profile.nickname}
+                                onChange={(e) => setProfile({ ...profile, nickname: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="age">Age</Label>
+                            <Input
+                                id="age"
+                                type="number"
+                                value={profile.age}
+                                onChange={(e) => setProfile({ ...profile, age: parseInt(e.target.value) })}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="gender">Gender</Label>
+                            <Input
+                                id="gender"
+                                value={profile.gender}
+                                onChange={(e) => setProfile({ ...profile, gender: e.target.value })}
+                            />
+                        </div>
+                        <div>
+                            <Label htmlFor="location">Location</Label>
+                            <Input
+                                id="location"
+                                value={profile.location}
+                                onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                            />
+                        </div>
+                    </div>
+                )}
+                {activeTab === "keywords" && (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">Keywords</h2>
+                        {profile.keywords.map((keyword, index) => (
+                            <div key={index} className="space-y-2 pb-4 border-b">
+                                <div className="flex items-center space-x-2">
+                                    <Input
+                                        value={keyword.word}
+                                        onChange={(e) => handleKeywordChange(index, 'word', e.target.value)}
+                                        placeholder="Keyword"
+                                    />
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        onClick={() => removeKeyword(index)}
+                                    >
+                                        <XIcon className="h-4 w-4" />
+                                    </Button>
+                                </div>
+                                <Textarea
+                                    value={keyword.description}
+                                    onChange={(e) => handleKeywordChange(index, 'description', e.target.value)}
+                                    placeholder="Description (min 50 characters)"
+                                    minLength={50}
+                                />
+                            </div>
+                        ))}
+                        <Button onClick={addKeyword} className="w-full">
+                            <PlusIcon className="mr-2 h-4 w-4" /> Add Keyword
+                        </Button>
+                    </div>
+                )}
+                {activeTab === "topKeywords" && (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">Top 5 Keywords</h2>
+                        {profile.topKeywords.map((keyword, index) => (
+                            <div key={index} className="space-y-2 pb-4 border-b">
+                                <div className="flex items-center space-x-2">
+                                    <span className="font-bold">{index + 1}.</span>
+                                    <Input
+                                        value={keyword.word}
+                                        onChange={(e) => handleTopKeywordChange(index, 'word', e.target.value)}
+                                        placeholder="Keyword"
+                                    />
+                                </div>
+                                <Textarea
+                                    value={keyword.description}
+                                    onChange={(e) => handleTopKeywordChange(index, 'description', e.target.value)}
+                                    placeholder="Description (min 50 characters)"
+                                    minLength={50}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+                {activeTab === "icebreakers" && (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">Icebreaker Questions</h2>
+                        {profile.icebreakers.map((question, index) => (
+                            <div key={index} className="flex items-center space-x-2">
+                                <Input
+                                    value={question}
+                                    onChange={(e) => {
+                                        const newIcebreakers = [...profile.icebreakers]
+                                        newIcebreakers[index] = e.target.value
+                                        setProfile({ ...profile, icebreakers: newIcebreakers })
+                                    }}
+                                    placeholder="Icebreaker question"
+                                />
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => removeIcebreaker(index)}
+                                >
+                                    <XIcon className="h-4 w-4" />
+                                </Button>
+                            </div>
+                        ))}
+                        <Button onClick={addIcebreaker} className="w-full">
+                            <PlusIcon className="mr-2 h-4 w-4" /> Add Icebreaker
+                        </Button>
+                    </div>
+                )}
+                {activeTab === "privacy" && (
+                    <div className="space-y-4">
+                        <h2 className="text-2xl font-semibold">Privacy Settings</h2>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="showAge">Show Age</Label>
+                            <Switch
+                                id="showAge"
+                                checked={profile.showAge}
+                                onCheckedChange={(checked) => setProfile({ ...profile, showAge: checked })}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="showGender">Show Gender</Label>
+                            <Switch
+                                id="showGender"
+                                checked={profile.showGender}
+                                onCheckedChange={(checked) => setProfile({ ...profile, showGender: checked })}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between">
+                            <Label htmlFor="showLocation">Show Location</Label>
+                            <Switch
+                                id="showLocation"
+                                checked={profile.showLocation}
+                                onCheckedChange={(checked) => setProfile({ ...profile, showLocation: checked })}
+                            />
+                        </div>
+                    </div>
+                )}
+                <Button className="mt-8 w-full">Save Profile</Button>
             </div>
         </div>
     )
