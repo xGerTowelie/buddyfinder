@@ -1,19 +1,20 @@
 "use client"
 
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { BellIcon, CreditCardIcon, LockIcon, UserIcon } from "lucide-react"
-import { useState } from "react"
+import { Switch } from "@/components/ui/switch"
+import { BellIcon, LockIcon, UserIcon, GlobeIcon } from "lucide-react"
 
 export default function SettingsPage() {
     const [activeTab, setActiveTab] = useState("profile")
 
     const tabs = [
         { id: "profile", label: "Profile", icon: UserIcon },
+        { id: "privacy", label: "Privacy", icon: LockIcon },
         { id: "notifications", label: "Notifications", icon: BellIcon },
-        { id: "security", label: "Security", icon: LockIcon },
-        { id: "billing", label: "Billing", icon: CreditCardIcon },
+        { id: "language", label: "Language", icon: GlobeIcon },
     ]
 
     return (
@@ -39,8 +40,8 @@ export default function SettingsPage() {
                             <div className="space-y-4">
                                 <h2 className="text-2xl font-semibold">Profile Settings</h2>
                                 <div>
-                                    <Label htmlFor="name">Name</Label>
-                                    <Input id="name" defaultValue="John Doe" />
+                                    <Label htmlFor="nickname">Nickname</Label>
+                                    <Input id="nickname" defaultValue="JohnDoe" />
                                 </div>
                                 <div>
                                     <Label htmlFor="email">Email</Label>
@@ -49,39 +50,51 @@ export default function SettingsPage() {
                                 <Button>Update Profile</Button>
                             </div>
                         )}
+                        {activeTab === "privacy" && (
+                            <div className="space-y-4">
+                                <h2 className="text-2xl font-semibold">Privacy Settings</h2>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="publicProfile">Public Profile</Label>
+                                    <Switch id="publicProfile" />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="showLocation">Show Location</Label>
+                                    <Switch id="showLocation" />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="showAge">Show Age</Label>
+                                    <Switch id="showAge" />
+                                </div>
+                                <Button>Save Privacy Settings</Button>
+                            </div>
+                        )}
                         {activeTab === "notifications" && (
                             <div className="space-y-4">
                                 <h2 className="text-2xl font-semibold">Notification Preferences</h2>
-                                <div className="flex items-center space-x-2">
-                                    <Input id="emailNotifications" type="checkbox" className="w-4 h-4" />
+                                <div className="flex items-center justify-between">
                                     <Label htmlFor="emailNotifications">Email Notifications</Label>
+                                    <Switch id="emailNotifications" />
                                 </div>
-                                <div className="flex items-center space-x-2">
-                                    <Input id="pushNotifications" type="checkbox" className="w-4 h-4" />
+                                <div className="flex items-center justify-between">
                                     <Label htmlFor="pushNotifications">Push Notifications</Label>
+                                    <Switch id="pushNotifications" />
                                 </div>
                                 <Button>Save Preferences</Button>
                             </div>
                         )}
-                        {activeTab === "security" && (
+                        {activeTab === "language" && (
                             <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">Security Settings</h2>
+                                <h2 className="text-2xl font-semibold">Language Settings</h2>
                                 <div>
-                                    <Label htmlFor="currentPassword">Current Password</Label>
-                                    <Input id="currentPassword" type="password" />
+                                    <Label htmlFor="language">Preferred Language</Label>
+                                    <select id="language" className="w-full p-2 border rounded">
+                                        <option value="en">English</option>
+                                        <option value="es">Spanish</option>
+                                        <option value="fr">French</option>
+                                        <option value="de">German</option>
+                                    </select>
                                 </div>
-                                <div>
-                                    <Label htmlFor="newPassword">New Password</Label>
-                                    <Input id="newPassword" type="password" />
-                                </div>
-                                <Button>Change Password</Button>
-                            </div>
-                        )}
-                        {activeTab === "billing" && (
-                            <div className="space-y-4">
-                                <h2 className="text-2xl font-semibold">Billing Information</h2>
-                                <p>Your current plan: Pro</p>
-                                <Button>Upgrade Plan</Button>
+                                <Button>Save Language Settings</Button>
                             </div>
                         )}
                     </div>
