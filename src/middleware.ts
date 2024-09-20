@@ -16,8 +16,20 @@ export default auth((req) => {
         return NextResponse.next()
     }
 
+    if (url.pathname === '/') {
+        if (req.auth) {
+            return NextResponse.redirect(
+                new URL(
+                    "profile",
+                    req.url
+                )
+            )
+        } else {
+            return NextResponse.next()
+        }
+    }
     // ignore for "home" page
-    if (!req.auth && url?.pathname !== "/") {
+    if (!req.auth) {
 
         // redirect to login with dynamic callback url
         return NextResponse.redirect(

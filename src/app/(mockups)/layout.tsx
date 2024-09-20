@@ -17,6 +17,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Toaster } from '@/components/ui/toaster'
+import { signOut } from '@/auth/auth'
 
 export default function RootLayout({
     children,
@@ -83,7 +84,7 @@ export default function RootLayout({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem>
+                            <DropdownMenuItem onClick={async () => await signOut()}>
                                 <LogOut className="mr-2 h-4 w-4" />
                                 <span>Log out</span>
                             </DropdownMenuItem>

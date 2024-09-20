@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import Link from 'next/link'
 import { ChevronLeft, ChevronRight, Settings } from "lucide-react"
+import AuthButton from '@/auth/AuthButton.server'
 
 // Arrays of images and gradients
 const images = [
@@ -106,7 +107,7 @@ const slides = [
         title: "Be Kind and Connect",
         content: "We’re all about positive connections. Be respectful and enjoy meeting new people. Who knows? You might find some amazing friends. Ready to join?",
         buttonText: "Sign Up Now",
-        buttonLink: "/register"
+        buttonLink: "/signup"
     }
 ]
 
@@ -164,7 +165,7 @@ const Slide = ({ slide, image, gradient, blendMode, effectStrength, isActive }) 
                     transition={{ delay: 0.6 }}
                 >
                     <Link href={slide.buttonLink}>
-                        <Button className="bg-white text-teal-600 hover:bg-teal-100 text-lg px-6 py-3">
+                        <Button variant="default" className="text-2xl px-10 py-6 opacity-80 hover:opacity-100 hover:scale-110 transition-all" >
                             {slide.buttonText}
                         </Button>
                     </Link>
@@ -273,6 +274,13 @@ export default function Home() {
                 />
             </AnimatePresence>
 
+            <div
+                className="absolute top-4 right-20 z-20">
+                <Link href="/signin">
+                    <Button variant="secondary">Login</Button>
+                </Link>
+
+            </div>
             <Button
                 onClick={() => setShowSettings(!showSettings)}
                 className="absolute top-4 right-4 z-20 bg-white text-gray-800 hover:bg-gray-200"
