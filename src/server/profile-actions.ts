@@ -4,7 +4,7 @@
 
 import prisma from '@/lib/prisma'
 
-export async function updateProfile(userId: number, profileData: any) {
+export async function updateProfile(userId: string, profileData: any) {
     try {
         await prisma.user.update({
             where: { id: userId },
@@ -54,7 +54,7 @@ export async function updateProfile(userId: number, profileData: any) {
     }
 }
 
-export async function getProfile(userId: number) {
+export async function getProfile(userId: string) {
     try {
         const user = await prisma.user.findUnique({
             where: { id: userId },

@@ -9,7 +9,8 @@
     "lint": "next lint",
     "studio": "dotenv -e .env.local -- npx prisma studio",
     "pushdb": "dotenv -e .env.local -- npx prisma db push && npx prisma generate",
-    "docker": "docker compose --env-file .env.local up"
+    "docker": "docker compose --env-file .env.local up",
+    "seed": "dotenv -e .env.local -- ts-node --project tsconfig.seed.json prisma/seed.ts"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
@@ -41,6 +42,7 @@
     "tailwindcss-animate": "^1.0.7",
     "text-area": "^1.0.0",
     "textarea": "^0.3.0",
+    "uuid": "^10.0.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
@@ -49,11 +51,13 @@
     "@types/node": "^20.16.5",
     "@types/react": "^18.3.7",
     "@types/react-dom": "^18.3.0",
+    "@types/uuid": "^10.0.0",
     "eslint": "^8.57.1",
     "eslint-config-next": "14.2.11",
     "postcss": "^8.4.47",
     "prisma": "^5.19.1",
     "tailwindcss": "^3.4.12",
+    "ts-node": "^10.9.2",
     "typescript": "^5.6.2"
   }
 }
