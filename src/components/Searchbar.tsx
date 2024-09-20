@@ -1,16 +1,18 @@
+// components/SearchBar.tsx
+
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { SearchIcon } from 'lucide-react'
+import { SearchIcon, X } from 'lucide-react'
 import { getKeywordSuggestions } from '@/server/keyword-actions'
-import { usePathname } from 'next/navigation'
 
 export function SearchBar({ hideOnSearch = false }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [suggestions, setSuggestions] = useState<string[]>([])
+    const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
     const router = useRouter()
     const pathname = usePathname()
 
@@ -18,47 +20,59 @@ export function SearchBar({ hideOnSearch = false }) {
         const fetchSuggestions = async () => {
             if (searchTerm.length > 1) {
                 const keywordSuggestions = await getKeywordSuggestions(searchTerm)
-                setSuggestions(keywordSuggestions)
+                setSuggestions(keywordSuggestions.filter(s => !selectedKeywords.includes(s)))
             } else {
                 setSuggestions([])
             }
         }
 
         fetchSuggestions()
-    }, [searchTerm])
+    }, [searchTerm, selectedKeywords])
+
+    const handleSearch = (e: React.FormEvent) => {
+        e.preventDefault()
+        const searchQuery = [...selectedKeywords, searchTerm].filter(Boolean).join(',')
+        router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+    }
+
+    const addKeywordToSearch = (keyword: string) => {
+        setSelectedKeywords(prev => [...prev, keyword])
+        setSearchTerm('')
+    }
+
+    const removeKeyword = (keyword: string) => {
+        setSelectedKeywords(prev => prev.filter(k => k !== keyword))
+    }
 
     if (hideOnSearch && pathname === '/search') {
         return null
     }
 
-    const handleSearch = (e: React.FormEvent) => {
-        e.preventDefault()
-        router.push(`/search?q=${encodeURIComponent(searchTerm)}`)
-    }
-
-    const addKeywordToSearch = (keyword: string) => {
-        setSearchTerm(prev => {
-            const terms = prev.split(' ')
-            terms.pop()
-            return [...terms, keyword].join(' ') + ' '
-        })
-    }
-
-    if (hideOnSearch && router.pathname === '/search') {
-        return null
-    }
-
     return (
         <form onSubmit={handleSearch} className="relative">
-            <div className="flex items-center">
+            <div className="flex items-center flex-wrap gap-2 p-2 border rounded-md">
+                {selectedKeywords.map((keyword, index) => (
+                    <div key={index} className="flex items-center bg-primary text-primary-foreground px-2 py-1 rounded-full text-sm">
+                        {keyword}
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            className="ml-1 p-0 h-4 w-4"
+                            onClick={() => removeKeyword(keyword)}
+                        >
+                            <X className="h-3 w-3" />
+                        </Button>
+                    </div>
+                ))}
                 <Input
                     type="text"
                     placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full"
+                    className="flex-grow border-none shadow-none"
                 />
-                <Button type="submit" variant="ghost" size="icon" className="ml-2">
+                <Button type="submit" variant="ghost" size="icon">
                     <SearchIcon className="h-4 w-4" />
                 </Button>
             </div>
