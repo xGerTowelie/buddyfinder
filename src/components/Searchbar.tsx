@@ -1,3 +1,5 @@
+// components/SearchBar.tsx
+
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
@@ -6,11 +8,10 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchIcon, X } from 'lucide-react'
 import {
-    Tooltip,
-    TooltipContent,
-    TooltipProvider,
-    TooltipTrigger,
-} from "@/components/ui/tooltip"
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
 import { getKeywordSuggestions } from '@/server/keyword-actions'
 
@@ -18,9 +19,11 @@ export function SearchBar({ hideOnSearch = false }) {
     const [searchTerm, setSearchTerm] = useState('')
     const [suggestions, setSuggestions] = useState<string[]>([])
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const router = useRouter()
     const pathname = usePathname()
     const inputRef = useRef<HTMLInputElement>(null)
+    const popoverTriggerRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -53,6 +56,7 @@ export function SearchBar({ hideOnSearch = false }) {
 
     const clearAllKeywords = () => {
         setSelectedKeywords([])
+        setIsPopoverOpen(false)
     }
 
     if (hideOnSearch && pathname === '/search') {
@@ -70,47 +74,54 @@ export function SearchBar({ hideOnSearch = false }) {
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pr-16"
                 />
-                <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <Badge
-                                variant="secondary"
-                                className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                            >
+                <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
+                    <PopoverTrigger asChild>
+                        <div
+                            ref={popoverTriggerRef}
+                            onMouseEnter={() => setIsPopoverOpen(true)}
+                            onMouseLeave={() => setIsPopoverOpen(false)}
+                            onClick={() => setIsPopoverOpen(!isPopoverOpen)}
+                            className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                        >
+                            <Badge variant="secondary">
                                 {selectedKeywords.length}
                             </Badge>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                            <div className="flex flex-wrap gap-1 max-w-xs">
-                                {selectedKeywords.map((keyword, index) => (
-                                    <Badge key={index} variant="outline" className="flex items-center gap-1">
-                                        {keyword}
-                                        <Button
-                                            type="button"
-                                            variant="ghost"
-                                            size="sm"
-                                            className="h-4 w-4 p-0"
-                                            onClick={() => removeKeyword(keyword)}
-                                        >
-                                            <X className="h-3 w-3" />
-                                        </Button>
-                                    </Badge>
-                                ))}
-                                {selectedKeywords.length > 0 && (
+                        </div>
+                    </PopoverTrigger>
+                    <PopoverContent
+                        className="w-64"
+                        onMouseEnter={() => setIsPopoverOpen(true)}
+                        onMouseLeave={() => setIsPopoverOpen(false)}
+                    >
+                        <div className="flex flex-wrap gap-1 max-w-xs">
+                            {selectedKeywords.map((keyword, index) => (
+                                <Badge key={index} variant="outline" className="flex items-center gap-1">
+                                    {keyword}
                                     <Button
                                         type="button"
                                         variant="ghost"
                                         size="sm"
-                                        onClick={clearAllKeywords}
-                                        className="text-xs"
+                                        className="h-4 w-4 p-0"
+                                        onClick={() => removeKeyword(keyword)}
                                     >
-                                        Clear All
+                                        <X className="h-3 w-3" />
                                     </Button>
-                                )}
-                            </div>
-                        </TooltipContent>
-                    </Tooltip>
-                </TooltipProvider>
+                                </Badge>
+                            ))}
+                        </div>
+                        {selectedKeywords.length > 0 && (
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={clearAllKeywords}
+                                className="mt-2 text-xs w-full"
+                            >
+                                Clear All
+                            </Button>
+                        )}
+                    </PopoverContent>
+                </Popover>
             </div>
             <Button type="submit" variant="ghost" size="icon" className="ml-2">
                 <SearchIcon className="h-4 w-4" />
