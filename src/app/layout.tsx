@@ -3,6 +3,7 @@ import localFont from "next/font/local"
 import "./globals.css"
 import { Navbar } from "@/components/Navbar"
 import { Toaster } from "@/components/ui/toaster"
+import { initializeSocket } from "@/server/socket"
 
 const geistSans = localFont({
     src: "./fonts/GeistVF.woff",
@@ -25,6 +26,11 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode
 }>) {
+    // Initialize socket server
+    if (typeof window !== 'undefined') {
+        const socket = initializeSocket(window.location.origin)
+    }
+
     return (
         <html lang="en">
             <body

@@ -25,12 +25,12 @@ model User {
     icebreakers        Icebreaker[]
     sentRequests       FriendRequest[] @relation("Sender")
     receivedRequests   FriendRequest[] @relation("Receiver")
-    sentMessages       Message[]       @relation("Sender")
-    receivedMessages   Message[]       @relation("Receiver")
     publicProfile      Boolean         @default(false)
     emailNotifications Boolean         @default(true)
     pushNotifications  Boolean         @default(true)
     language           String          @default("en")
+    chats              Chat[]          @relation("ChatParticipants")
+    sentMessages       Message[]       @relation("UserMessages")
 }
 
 model Keyword {
@@ -69,12 +69,20 @@ model FriendRequest {
     receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
 }
 
+model Chat {
+    id           String    @id @default(uuid())
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
+    messages     Message[]
+    participants User[]    @relation("ChatParticipants")
+}
+
 model Message {
-    id         String   @id @default(uuid())
-    content    String
-    senderId   String
-    receiverId String
-    createdAt  DateTime @default(now())
-    sender     User     @relation("Sender", fields: [senderId], references: [id])
-    receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+    id        String   @id @default(uuid())
+    content   String
+    createdAt DateTime @default(now())
+    senderId  String
+    chatId    String
+    sender    User     @relation("UserMessages", fields: [senderId], references: [id])
+    chat      Chat     @relation(fields: [chatId], references: [id])
 }
