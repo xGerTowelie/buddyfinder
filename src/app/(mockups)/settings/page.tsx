@@ -19,6 +19,8 @@ export default function SettingsPage() {
         pushNotifications: false,
         language: "en",
     })
+    const [initialSettings, setInitialSettings] = useState(settings)
+    const [hasChanges, setHasChanges] = useState(false)
     const { toast } = useToast()
 
     useEffect(() => {
@@ -26,10 +28,16 @@ export default function SettingsPage() {
             const fetchedSettings = await getSettings()
             if (fetchedSettings) {
                 setSettings(fetchedSettings)
+                setInitialSettings(fetchedSettings)
             }
         }
         fetchSettings()
     }, [])
+
+    useEffect(() => {
+        const changed = JSON.stringify(settings) !== JSON.stringify(initialSettings)
+        setHasChanges(changed)
+    }, [settings, initialSettings])
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target
@@ -44,6 +52,8 @@ export default function SettingsPage() {
         e.preventDefault()
         const result = await updateSettings(settings)
         if (result.success) {
+            setInitialSettings(settings)
+            setHasChanges(false)
             toast({
                 title: "Settings updated",
                 description: "Your settings have been successfully updated.",
@@ -69,20 +79,30 @@ export default function SettingsPage() {
             <div className="container mx-auto">
                 <h1 className="text-2xl font-bold mb-6">Settings</h1>
                 <div className="flex flex-col md:flex-row gap-6">
-                    <nav className="w-full md:w-64 space-y-2">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`flex items-center space-x-2 w-full px-4 py-2 text-left rounded-lg ${activeTab === tab.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
-                                    }`}
+                    <nav className="w-full md:w-64 flex flex-col">
+                        <div className="space-y-2 mb-8">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`flex items-center space-x-2 w-full px-4 py-2 text-left rounded-lg ${activeTab === tab.id ? "bg-primary text-primary-foreground" : "hover:bg-muted"
+                                        }`}
+                                >
+                                    <tab.icon className="w-5 h-5" />
+                                    <span>{tab.label}</span>
+                                </button>
+                            ))}
+                        </div>
+                        {hasChanges && (
+                            <Button
+                                onClick={handleSubmit}
+                                className="w-full"
                             >
-                                <tab.icon className="w-5 h-5" />
-                                <span>{tab.label}</span>
-                            </button>
-                        ))}
+                                Save Settings
+                            </Button>
+                        )}
                     </nav>
-                    <form onSubmit={handleSubmit} className="flex-1">
+                    <div className="flex-1">
                         {activeTab === "profile" && (
                             <div className="space-y-4">
                                 <h2 className="text-2xl font-semibold">Profile Settings</h2>
@@ -161,8 +181,7 @@ export default function SettingsPage() {
                                 </div>
                             </div>
                         )}
-                        <Button type="submit" className="mt-6">Save Settings</Button>
-                    </form>
+                    </div>
                 </div>
             </div>
         </div>
