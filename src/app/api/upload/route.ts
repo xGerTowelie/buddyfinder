@@ -20,14 +20,23 @@ export async function POST(request: NextRequest) {
         const bytes = await file.arrayBuffer()
         const buffer = Buffer.from(bytes)
 
-        // Save file to a public directory
+        // Ensure the uploads directory exists
         const uploadDir = path.join(process.cwd(), 'public', 'uploads')
+        await writeFile(path.join(uploadDir, '.gitkeep'), '')
+
+        // Save file to the public/uploads directory
         const uniqueFilename = `${user.id}-${Date.now()}-${file.name}`
         const filepath = path.join(uploadDir, uniqueFilename)
         await writeFile(filepath, buffer)
 
         // Generate the URL for the uploaded file
         const fileUrl = `/uploads/${uniqueFilename}`
+
+        // Update the user's profile image in the database
+        await prisma.user.update({
+            where: { id: user.id },
+            data: { profileImage: fileUrl },
+        })
 
         return NextResponse.json({ success: true, url: fileUrl })
     } catch (error) {

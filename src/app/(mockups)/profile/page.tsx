@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { AnimatedProfile } from "@/components/Profiles"
 import { updateProfile, getProfile } from "@/server/profile-actions"
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from '@/hooks/use-toast'
 import { ZodError } from "zod"
 import { Profile, ProfileSchema } from "@/lib/validation"
 import { GeneralSection, IcebreakersSection, KeywordsSection, PrivacySection, TopKeywordsSection } from "@/components/profile"
