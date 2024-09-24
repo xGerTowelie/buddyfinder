@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
 import { BellIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, MessageSquare, LogOut, Search } from "lucide-react"
@@ -16,6 +16,9 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Toaster } from '@/components/ui/toaster'
 import { signOut } from '@/auth/auth'
+import useSWR from 'swr'
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 export default function RootLayout({
     children,
@@ -23,6 +26,9 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
+    const { data: user, error } = useSWR('/api/user', fetcher)
+
+    if (error) console.error('Failed to load user data:', error)
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -74,7 +80,7 @@ export default function RootLayout({
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
                                 <AnimatedProfile
-                                    imageUrl="https://yt3.ggpht.com/c1FuHjy6VWExRUIjTVgYVp1I2Fyc8CROTiT9wxBdaUmAel_NXXTCBx0gBVqbTmbJVReHHeSV=s108-c-k-c0x00ffffff-no-rj"
+                                    imageUrl={user?.profileImage || "/placeholder-user.jpg"}
                                     size="sm"
                                     showSupportBadge={true}
                                     variant="ripple"
