@@ -9,6 +9,7 @@ import { SendIcon, PlusIcon } from "lucide-react"
 import { io, Socket } from "socket.io-client"
 import useSWR from 'swr'
 import { getLoggedInUser } from "@/server/actions"
+import { UserSelector } from "@/components/UserSelector"
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
@@ -18,6 +19,7 @@ export default function ChatsPage() {
     const [message, setMessage] = useState("")
     const messageEndRef = useRef<HTMLDivElement>(null)
     const [user, setUser] = useState<any>(null)
+    const [isUserSelectorOpen, setIsUserSelectorOpen] = useState(false)
 
     const { data: chats, error: chatsError, mutate: mutateChats } = useSWR('/api/chats', fetcher)
     const { data: messages, error: messagesError, mutate: mutateMessages } = useSWR(selectedChat ? `/api/chats/${selectedChat}/messages` : null, fetcher)
@@ -74,22 +76,26 @@ export default function ChatsPage() {
         }
     }
 
-    const handleCreateNewChat = async () => {
-        // This is a placeholder function. In a real application, you'd typically
-        // show a modal or navigate to a new page to select a user to chat with.
-        const response = await fetch('/api/chats', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ participantId: 'some-user-id' }),
-        })
+    const handleCreateNewChat = async (userId: string) => {
+        try {
+            const response = await fetch('/api/chats', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ participantId: userId }),
+            })
 
-        if (response.ok) {
-            const newChat = await response.json()
-            mutateChats()
-        } else {
-            console.error('Failed to create new chat')
+            if (response.ok) {
+                const newChat = await response.json()
+                await mutateChats()
+                setSelectedChat(newChat.id)
+                setIsUserSelectorOpen(false)
+            } else {
+                console.error('Failed to create new chat')
+            }
+        } catch (error) {
+            console.error('Error creating new chat:', error)
         }
     }
 
@@ -101,7 +107,7 @@ export default function ChatsPage() {
             <div className="w-1/3 border-r pr-4 overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-2xl font-bold">Chats</h2>
-                    <Button onClick={handleCreateNewChat} size="sm">
+                    <Button onClick={() => setIsUserSelectorOpen(true)} size="sm">
                         <PlusIcon className="h-4 w-4 mr-2" />
                         New Chat
                     </Button>
@@ -179,6 +185,11 @@ export default function ChatsPage() {
                     </div>
                 )}
             </div>
+            <UserSelector
+                isOpen={isUserSelectorOpen}
+                onClose={() => setIsUserSelectorOpen(false)}
+                onSelectUser={handleCreateNewChat}
+            />
         </div>
     )
 }
