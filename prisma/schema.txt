@@ -1,0 +1,109 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                 String          @id @default(uuid())
+    nickname           String?
+    email              String          @unique
+    username           String          @unique
+    password           String
+    age                Int?
+    gender             String?
+    location           String?
+    showAge            Boolean         @default(true)
+    showGender         Boolean         @default(true)
+    showLocation       Boolean         @default(true)
+    profileImage       String?
+    bio                String?
+    keywords           Keyword[]
+    topKeywords        TopKeyword[]
+    icebreakers        Icebreaker[]
+    sentRequests       FriendRequest[] @relation("Sender")
+    receivedRequests   FriendRequest[] @relation("Receiver")
+    publicProfile      Boolean         @default(false)
+    emailNotifications Boolean         @default(true)
+    pushNotifications  Boolean         @default(true)
+    language           String          @default("en")
+    chats              Chat[]          @relation("ChatParticipants")
+    sentMessages       Message[]       @relation("UserMessages")
+    notifications      Notification[]
+    animation          String          @default("default")
+}
+
+model Keyword {
+    id          String @id @default(uuid())
+    word        String
+    description String
+    userId      String
+    user        User   @relation(fields: [userId], references: [id])
+}
+
+model TopKeyword {
+    id     String @id @default(uuid())
+    word   String
+    rank   Int
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
+
+    @@unique([userId, rank])
+}
+
+model Icebreaker {
+    id            String          @id @default(uuid())
+    question      String
+    userId        String
+    user          User            @relation(fields: [userId], references: [id])
+    FriendRequest FriendRequest[]
+}
+
+model FriendRequest {
+    id           String      @id @default(uuid())
+    senderId     String
+    receiverId   String
+    status       String // "pending", "accepted", "rejected"
+    createdAt    DateTime    @default(now())
+    icebreakerId String?
+    answer       String?
+    sender       User        @relation("Sender", fields: [senderId], references: [id])
+    receiver     User        @relation("Receiver", fields: [receiverId], references: [id])
+    icebreaker   Icebreaker? @relation(fields: [icebreakerId], references: [id])
+}
+
+model Chat {
+    id           String    @id @default(uuid())
+    createdAt    DateTime  @default(now())
+    updatedAt    DateTime  @updatedAt
+    messages     Message[]
+    participants User[]    @relation("ChatParticipants")
+}
+
+model Message {
+    id        String   @id @default(uuid())
+    content   String
+    createdAt DateTime @default(now())
+    senderId  String
+    chatId    String
+    read      Boolean  @default(false)
+    sender    User     @relation("UserMessages", fields: [senderId], references: [id])
+    chat      Chat     @relation(fields: [chatId], references: [id])
+}
+
+model Notification {
+    id        String   @id @default(uuid())
+    userId    String
+    content   String
+    type      String
+    isRead    Boolean  @default(false)
+    createdAt DateTime @default(now())
+    chatId    String?
+    user      User     @relation(fields: [userId], references: [id])
+}
