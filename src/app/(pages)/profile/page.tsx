@@ -340,7 +340,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                     <div className="flex flex-wrap gap-2 mb-4">
-                        {editedUser.keywords.map((keyword) => (
+                        {editedUser.keywords && editedUser.keywords.map((keyword) => (
                             <Badge key={keyword.id} variant="secondary" className="p-2">
                                 {keyword.word}
                                 <Button
@@ -413,7 +413,7 @@ export default function ProfilePage() {
                 </CardHeader>
                 <CardContent>
                     <ul className="space-y-2 mb-4">
-                        {editedUser.icebreakers.map((icebreaker) => (
+                        {editedUser.icebreakers && editedUser.icebreakers.map((icebreaker) => (
                             <li key={icebreaker.id} className="flex items-center justify-between">
                                 <span>{icebreaker.question}</span>
                                 <Button
