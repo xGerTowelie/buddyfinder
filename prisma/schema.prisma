@@ -31,6 +31,7 @@ model User {
     language           String          @default("en")
     chats              Chat[]          @relation("ChatParticipants")
     sentMessages       Message[]       @relation("UserMessages")
+    notifications      Notification[]
 }
 
 model Keyword {
@@ -83,7 +84,19 @@ model Message {
     createdAt DateTime @default(now())
     senderId  String
     chatId    String
+    read      Boolean  @default(false)
     sender    User     @relation("UserMessages", fields: [senderId], references: [id])
     chat      Chat     @relation(fields: [chatId], references: [id])
+}
+
+model Notification {
+    id        String   @id @default(uuid())
+    userId    String
+    content   String
+    type      String
+    isRead    Boolean  @default(false)
+    createdAt DateTime @default(now())
+    chatId    String?
+    user      User     @relation(fields: [userId], references: [id])
 }
 

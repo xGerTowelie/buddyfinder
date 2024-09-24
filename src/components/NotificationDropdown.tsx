@@ -13,7 +13,7 @@ import { useRouter } from 'next/navigation'
 import { KeyedMutator } from 'swr'
 
 interface NotificationDropdownProps {
-    notifications: any[]
+    notifications: any[] | undefined
     setNotifications: React.Dispatch<React.SetStateAction<any[]>>
     mutateNotifications: KeyedMutator<any>
 }
@@ -36,21 +36,24 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ noti
         }
     }
 
+    console.log(notifications)
+    const notificationCount = notifications?.length || 0
+
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
                     <BellIcon className="h-4 w-4" />
-                    {notifications.length > 0 && (
+                    {notificationCount > 0 && (
                         <span className="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-                            {notifications.length}
+                            {notificationCount}
                         </span>
                     )}
                 </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
                 <ScrollArea className="h-[300px]">
-                    {notifications.length === 0 ? (
+                    {!notifications || notifications.length === 0 ? (
                         <DropdownMenuItem>No new notifications</DropdownMenuItem>
                     ) : (
                         notifications.map((notification) => (
@@ -67,7 +70,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ noti
                         ))
                     )}
                 </ScrollArea>
-                {notifications.length > 0 && (
+                {notificationCount > 0 && (
                     <DropdownMenuItem onSelect={clearNotifications} className="text-center text-sm text-blue-500 hover:text-blue-700">
                         Clear all notifications
                     </DropdownMenuItem>

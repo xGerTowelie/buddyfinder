@@ -38,6 +38,15 @@ export async function POST(req: Request, { params }: { params: { chatId: string 
         const { chatId } = params
         const { content } = await req.json()
 
+        const chat = await prisma.chat.findUnique({
+            where: { id: chatId },
+            include: { participants: true }
+        })
+
+        if (!chat) {
+            return NextResponse.json({ error: 'Chat not found' }, { status: 404 })
+        }
+
         const message = await prisma.message.create({
             data: {
                 content,
@@ -53,6 +62,17 @@ export async function POST(req: Request, { params }: { params: { chatId: string 
                     }
                 }
             }
+        })
+
+        // Create notifications for other participants
+        const otherParticipants = chat.participants.filter(p => p.id !== user.id)
+        await prisma.notification.createMany({
+            data: otherParticipants.map(participant => ({
+                userId: participant.id,
+                content: `New message from ${user.username}: ${content.substring(0, 50)}...`,
+                type: 'NEW_MESSAGE',
+                chatId: chatId
+            }))
         })
 
         return NextResponse.json(message)

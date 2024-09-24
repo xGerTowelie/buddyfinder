@@ -3,11 +3,12 @@
 import { useState } from 'react'
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Button } from "@/components/ui/button"
-import { BellIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, MessageSquare, LogOut, Search } from "lucide-react"
+import { MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon, MessageSquare, LogOut, Search } from "lucide-react"
 import Link from "next/link"
 import { AnimatedProfile } from "@/components/Profiles"
 import { SearchBar } from '@/components/Searchbar'
 import { FeedbackModal } from '@/components/FeedbackModal'
+import { NotificationDropdown } from '@/components/NotificationDropdown'
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -26,9 +27,11 @@ export default function RootLayout({
     children: React.ReactNode
 }>) {
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
-    const { data: user, error } = useSWR('/api/user', fetcher)
+    const { data: user, error: userError } = useSWR('/api/user', fetcher)
+    const { data: notifications, error: notificationsError, mutate: mutateNotifications } = useSWR('/api/notifications', fetcher)
 
-    if (error) console.error('Failed to load user data:', error)
+    if (userError) console.error('Failed to load user data:', userError)
+    if (notificationsError) console.error('Failed to load notifications:', notificationsError)
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -75,7 +78,11 @@ export default function RootLayout({
                     <Button variant="ghost" size="icon" onClick={() => setIsFeedbackModalOpen(true)}>
                         <MessageSquare className="h-4 w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon"><BellIcon className="h-4 w-4" /></Button>
+                    <NotificationDropdown
+                        notifications={notifications}
+                        setNotifications={(newNotifications) => mutateNotifications(newNotifications, false)}
+                        mutateNotifications={mutateNotifications}
+                    />
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <Button variant="ghost" size="icon">
