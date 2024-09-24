@@ -29,6 +29,7 @@ export default function RootLayout({
     const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false)
     const { data: user, error: userError } = useSWR('/api/user', fetcher)
     const { data: notifications, error: notificationsError, mutate: mutateNotifications } = useSWR('/api/notifications', fetcher)
+    console.log('user:', user)
 
     if (userError) console.error('Failed to load user data:', userError)
     if (notificationsError) console.error('Failed to load notifications:', notificationsError)
