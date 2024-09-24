@@ -52,7 +52,7 @@ export default function ChatsPage() {
                 socket.off('new message')
             }
         }
-    }, [socket, selectedChat])
+    }, [socket, selectedChat, mutateMessages])
 
     useEffect(() => {
         messageEndRef.current?.scrollIntoView({ behavior: "smooth" })
@@ -172,7 +172,6 @@ export default function ChatsPage() {
                                 placeholder="Type a message..."
                                 className="flex-1 mr-2 resize-none"
                                 rows={1}
-                                maxRows={4}
                             />
                             <Button onClick={handleSendMessage}>
                                 <SendIcon className="h-4 w-4" />

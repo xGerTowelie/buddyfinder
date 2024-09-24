@@ -37,7 +37,7 @@ export function UserSelector({ isOpen, onClose, onSelectUser }: UserSelectorProp
 
     const fetchUsers = async () => {
         try {
-            const response = await fetch('/api/users')
+            const response = await fetch('/api/user')
             if (response.ok) {
                 const data = await response.json()
                 setUsers(data)
