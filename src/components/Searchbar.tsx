@@ -11,7 +11,6 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { Badge } from "@/components/ui/badge"
-import { getKeywordSuggestions } from '@/server/keyword-actions'
 
 export function SearchBar({ hideOnSearch = false }) {
     const [searchTerm, setSearchTerm] = useState('')
@@ -26,8 +25,17 @@ export function SearchBar({ hideOnSearch = false }) {
     useEffect(() => {
         const fetchSuggestions = async () => {
             if (searchTerm.length > 1) {
-                const keywordSuggestions = await getKeywordSuggestions(searchTerm)
-                setSuggestions(keywordSuggestions.filter(s => !selectedKeywords.includes(s)))
+                try {
+                    const response = await fetch(`/api/keywords/suggestions?q=${encodeURIComponent(searchTerm)}`)
+                    if (response.ok) {
+                        const data = await response.json()
+                        setSuggestions(data.filter((s: string) => !selectedKeywords.includes(s)))
+                    } else {
+                        console.error('Failed to fetch keyword suggestions')
+                    }
+                } catch (error) {
+                    console.error('Error fetching keyword suggestions:', error)
+                }
             } else {
                 setSuggestions([])
             }
