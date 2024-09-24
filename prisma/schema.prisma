@@ -8,25 +8,29 @@ datasource db {
 }
 
 model User {
-    id               String          @id @default(uuid())
-    nickname         String?
-    email            String          @unique
-    username         String          @unique
-    password         String
-    age              Int?
-    gender           String?
-    location         String?
-    showAge          Boolean         @default(true)
-    showGender       Boolean         @default(true)
-    showLocation     Boolean         @default(true)
-    profileImage     String? // This line remains the same
-    keywords         Keyword[]
-    topKeywords      TopKeyword[]
-    icebreakers      Icebreaker[]
-    sentRequests     FriendRequest[] @relation("Sender")
-    receivedRequests FriendRequest[] @relation("Receiver")
-    sentMessages     Message[]       @relation("Sender")
-    receivedMessages Message[]       @relation("Receiver")
+    id                 String          @id @default(uuid())
+    nickname           String?
+    email              String          @unique
+    username           String          @unique
+    password           String
+    age                Int?
+    gender             String?
+    location           String?
+    showAge            Boolean         @default(true)
+    showGender         Boolean         @default(true)
+    showLocation       Boolean         @default(true)
+    profileImage       String? // This line remains the same
+    keywords           Keyword[]
+    topKeywords        TopKeyword[]
+    icebreakers        Icebreaker[]
+    sentRequests       FriendRequest[] @relation("Sender")
+    receivedRequests   FriendRequest[] @relation("Receiver")
+    sentMessages       Message[]       @relation("Sender")
+    receivedMessages   Message[]       @relation("Receiver")
+    publicProfile      Boolean         @default(false)
+    emailNotifications Boolean         @default(true)
+    pushNotifications  Boolean         @default(true)
+    language           String          @default("en")
 }
 
 model Keyword {
