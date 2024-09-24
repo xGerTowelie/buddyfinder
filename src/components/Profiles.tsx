@@ -1,4 +1,3 @@
-// components/Profiles.tsx
 import React, { useState } from 'react';
 import { BadgeCheck, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';

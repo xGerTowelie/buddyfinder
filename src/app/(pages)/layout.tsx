@@ -1,7 +1,3 @@
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { BellIcon, SearchIcon, MenuIcon, UserIcon, MessageSquareIcon, SettingsIcon, FileTextIcon } from "lucide-react"
 import type { Metadata } from "next"
 import "../globals.css"
 
