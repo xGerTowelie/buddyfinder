@@ -1,3 +1,4 @@
+'use client'
 import React, { useState, useRef } from 'react';
 import { BadgeCheck, Edit } from 'lucide-react';
 import { cn } from '@/lib/utils';

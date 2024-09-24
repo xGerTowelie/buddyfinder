@@ -14,6 +14,7 @@ model User {
     username           String          @unique
     password           String
     age                Int?
+    bio                String?
     gender             String?
     location           String?
     showAge            Boolean         @default(true)
@@ -42,14 +43,11 @@ model Keyword {
 }
 
 model TopKeyword {
-    id          String @id @default(uuid())
-    word        String
-    description String
-    rank        Int
-    userId      String
-    user        User   @relation(fields: [userId], references: [id])
-
-    @@unique([userId, rank])
+    id     String @id @default(uuid())
+    word   String
+    rank   Int
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 }
 
 model Icebreaker {

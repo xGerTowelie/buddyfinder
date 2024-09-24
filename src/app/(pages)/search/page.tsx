@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { AnimatedProfile } from '@/components/Profiles'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -21,6 +21,7 @@ export default function SearchPage() {
     const [users, setUsers] = useState<User[]>([])
     const [loading, setLoading] = useState(true)
     const searchParams = useSearchParams()
+    const router = useRouter()
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -39,6 +40,10 @@ export default function SearchPage() {
         fetchUsers()
     }, [searchParams])
 
+    const handleViewProfile = (userId: string) => {
+        router.push(`/profile/${userId}`)
+    }
+
     return (
         <div className="container mx-auto px-4">
             <h1 className="text-2xl font-bold mb-4">Search Users</h1>
@@ -52,7 +57,7 @@ export default function SearchPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {users.map((user) => (
-                        <Card key={user.id}>
+                        <Card key={user.id} className="group relative">
                             <CardHeader className="flex flex-row items-center space-x-4 pb-2">
                                 <AnimatedProfile
                                     imageUrl={user.profileImage || "/placeholder-user.jpg"}
@@ -73,8 +78,10 @@ export default function SearchPage() {
                                         <Badge key={index} variant="secondary">{keyword}</Badge>
                                     ))}
                                 </div>
-                                <Button className="w-full mt-4">View Profile</Button>
                             </CardContent>
+                            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Button onClick={() => handleViewProfile(user.id)}>View Profile</Button>
+                            </div>
                         </Card>
                     ))}
                 </div>
