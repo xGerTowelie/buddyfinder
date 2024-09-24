@@ -4,7 +4,7 @@ import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { AnimatedProfile } from "@/components/Profiles"
-import { CheckIcon, XIcon, UserPlusIcon, UserCheckIcon } from "lucide-react"
+import { CheckIcon, XIcon } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const mockIncomingRequests = [
