@@ -12,9 +12,19 @@ import { AnimatedProfile } from "@/components/Profiles"
 import { useRouter } from 'next/navigation'
 import { KeyedMutator } from 'swr'
 
+interface Notification {
+    id: string
+    content: string
+    createdAt: string
+    chatId?: string
+    sender?: {
+        profileImage?: string
+    }
+}
+
 interface NotificationDropdownProps {
-    notifications: any[] | undefined
-    setNotifications: React.Dispatch<React.SetStateAction<any[]>>
+    notifications: Notification[] | undefined
+    setNotifications: React.Dispatch<React.SetStateAction<Notification[]>>
     mutateNotifications: KeyedMutator<any>
 }
 
@@ -22,22 +32,52 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ noti
     const router = useRouter()
 
     const clearNotifications = async () => {
-        await fetch('/api/notifications/clear', { method: 'POST' })
-        setNotifications([])
-        mutateNotifications()
-    }
-
-    const handleNotificationClick = async (notification: any) => {
-        if (notification.chatId) {
-            await fetch(`/api/notifications/${notification.id}/read`, { method: 'POST' })
-            setNotifications(prev => prev.filter(n => n.id !== notification.id))
+        try {
+            await fetch('/api/notifications/clear', { method: 'POST' })
+            setNotifications([])
             mutateNotifications()
-            router.push(`/chats/${notification.chatId}`)
+        } catch (error) {
+            console.error('Failed to clear notifications:', error)
         }
     }
 
-    console.log(notifications)
-    const notificationCount = notifications?.length || 0
+    const handleNotificationClick = async (notification: Notification) => {
+        if (notification.chatId) {
+            try {
+                await fetch(`/api/notifications/${notification.id}/read`, { method: 'POST' })
+                setNotifications(prev => prev.filter(n => n.id !== notification.id))
+                mutateNotifications()
+                router.push(`/chats/${notification.chatId}`)
+            } catch (error) {
+                console.error('Failed to mark notification as read:', error)
+            }
+        }
+    }
+
+    const notificationCount = notifications?.length ?? 0
+
+    const renderNotifications = () => {
+        if (!Array.isArray(notifications) || notifications.length === 0) {
+            return <DropdownMenuItem>No new notifications</DropdownMenuItem>
+        }
+
+        return notifications.map((notification) => (
+            <DropdownMenuItem
+                key={notification.id}
+                onSelect={() => handleNotificationClick(notification)}
+                className="flex items-center p-4"
+            >
+                <AnimatedProfile
+                    imageUrl={notification.sender?.profileImage ?? "/placeholder-user.jpg"}
+                    size="sm"
+                />
+                <div className="ml-3">
+                    <p className="text-sm font-medium">{notification.content}</p>
+                    <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
+                </div>
+            </DropdownMenuItem>
+        ))
+    }
 
     return (
         <DropdownMenu>
@@ -53,22 +93,7 @@ export const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ noti
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80">
                 <ScrollArea className="h-[300px]">
-                    {!notifications || notifications.length === 0 ? (
-                        <DropdownMenuItem>No new notifications</DropdownMenuItem>
-                    ) : (
-                        notifications.map((notification) => (
-                            <DropdownMenuItem key={notification.id} onSelect={() => handleNotificationClick(notification)} className="flex items-center p-4">
-                                <AnimatedProfile
-                                    imageUrl={notification.sender?.profileImage || "/placeholder-user.jpg"}
-                                    size="sm"
-                                />
-                                <div className="ml-3">
-                                    <p className="text-sm font-medium">{notification.content}</p>
-                                    <p className="text-xs text-gray-500">{new Date(notification.createdAt).toLocaleString()}</p>
-                                </div>
-                            </DropdownMenuItem>
-                        ))
-                    )}
+                    {renderNotifications()}
                 </ScrollArea>
                 {notificationCount > 0 && (
                     <DropdownMenuItem onSelect={clearNotifications} className="text-center text-sm text-blue-500 hover:text-blue-700">

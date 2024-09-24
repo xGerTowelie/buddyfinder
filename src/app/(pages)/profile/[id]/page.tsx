@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { AnimatedProfile } from '@/components/Profiles'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { FriendRequestForm } from '@/components/FriendRequestForm'
 import prisma from '@/lib/prisma'
 
 async function getUser(id: string) {
@@ -9,7 +10,11 @@ async function getUser(id: string) {
         where: { id },
         include: {
             keywords: true,
-            topKeywords: true,
+            topKeywords: {
+                orderBy: {
+                    rank: 'asc'
+                }
+            },
             icebreakers: true,
         },
     })
@@ -49,7 +54,10 @@ export default async function UserProfilePage({ params }: { params: { id: string
                         <h2 className="text-xl font-semibold mb-2">Keywords</h2>
                         <div className="flex flex-wrap gap-2">
                             {user.keywords.map((keyword) => (
-                                <Badge key={keyword.id} variant="secondary">{keyword.word}</Badge>
+                                <Badge key={keyword.id} variant="secondary">
+                                    {keyword.word}
+                                    <span className="ml-2 text-xs text-gray-500">{keyword.description}</span>
+                                </Badge>
                             ))}
                         </div>
                     </div>
@@ -57,8 +65,11 @@ export default async function UserProfilePage({ params }: { params: { id: string
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Top Keywords</h2>
                             <div className="flex flex-wrap gap-2">
-                                {user.topKeywords.map((keyword) => (
-                                    <Badge key={keyword.id} variant="default">{keyword.word}</Badge>
+                                {user.topKeywords.map((keyword, index) => (
+                                    <Badge key={keyword.id} variant="default">
+                                        {keyword.word}
+                                        <span className="ml-2 text-xs">#{index + 1}</span>
+                                    </Badge>
                                 ))}
                             </div>
                         </div>
@@ -66,11 +77,7 @@ export default async function UserProfilePage({ params }: { params: { id: string
                     {user.icebreakers.length > 0 && (
                         <div>
                             <h2 className="text-xl font-semibold mb-2">Icebreakers</h2>
-                            <ul className="list-disc list-inside space-y-2">
-                                {user.icebreakers.map((icebreaker) => (
-                                    <li key={icebreaker.id}>{icebreaker.question}</li>
-                                ))}
-                            </ul>
+                            <FriendRequestForm userId={user.id} icebreakers={user.icebreakers} />
                         </div>
                     )}
                 </CardContent>

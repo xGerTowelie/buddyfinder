@@ -1,3 +1,6 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
     provider = "prisma-client-js"
 }
@@ -14,13 +17,13 @@ model User {
     username           String          @unique
     password           String
     age                Int?
-    bio                String?
     gender             String?
     location           String?
     showAge            Boolean         @default(true)
     showGender         Boolean         @default(true)
     showLocation       Boolean         @default(true)
     profileImage       String?
+    bio                String?
     keywords           Keyword[]
     topKeywords        TopKeyword[]
     icebreakers        Icebreaker[]
@@ -36,10 +39,11 @@ model User {
 }
 
 model Keyword {
-    id     String @id @default(uuid())
-    word   String
-    userId String
-    user   User   @relation(fields: [userId], references: [id])
+    id          String @id @default(uuid())
+    word        String
+    description String
+    userId      String
+    user        User   @relation(fields: [userId], references: [id])
 }
 
 model TopKeyword {
@@ -48,23 +52,29 @@ model TopKeyword {
     rank   Int
     userId String
     user   User   @relation(fields: [userId], references: [id])
+
+    @@unique([userId, rank])
 }
 
 model Icebreaker {
-    id       String @id @default(uuid())
-    question String
-    userId   String
-    user     User   @relation(fields: [userId], references: [id])
+    id            String          @id @default(uuid())
+    question      String
+    userId        String
+    user          User            @relation(fields: [userId], references: [id])
+    FriendRequest FriendRequest[]
 }
 
 model FriendRequest {
-    id         String   @id @default(uuid())
-    senderId   String
-    receiverId String
-    status     String // "pending", "accepted", "rejected"
-    createdAt  DateTime @default(now())
-    sender     User     @relation("Sender", fields: [senderId], references: [id])
-    receiver   User     @relation("Receiver", fields: [receiverId], references: [id])
+    id           String      @id @default(uuid())
+    senderId     String
+    receiverId   String
+    status       String // "pending", "accepted", "rejected"
+    createdAt    DateTime    @default(now())
+    icebreakerId String?
+    answer       String?
+    sender       User        @relation("Sender", fields: [senderId], references: [id])
+    receiver     User        @relation("Receiver", fields: [receiverId], references: [id])
+    icebreaker   Icebreaker? @relation(fields: [icebreakerId], references: [id])
 }
 
 model Chat {
@@ -96,3 +106,4 @@ model Notification {
     chatId    String?
     user      User     @relation(fields: [userId], references: [id])
 }
+
