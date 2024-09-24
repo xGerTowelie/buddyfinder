@@ -1,104 +1,134 @@
 import { PrismaClient } from '@prisma/client'
-import { v4 as uuidv4 } from 'uuid'
+import { hash } from 'bcryptjs'
 
 const prisma = new PrismaClient()
 
 async function main() {
     // Create users
-    const users = await Promise.all(
-        [
-            { nickname: 'towelie', age: 25, gender: 'Other', location: 'South Park' },
-            { nickname: 'cartman', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'stan', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'kyle', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'kenny', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'butters', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'wendy', age: 10, gender: 'Female', location: 'South Park' },
-            { nickname: 'bebe', age: 10, gender: 'Female', location: 'South Park' },
-            { nickname: 'timmy', age: 10, gender: 'Male', location: 'South Park' },
-            { nickname: 'jimmy', age: 10, gender: 'Male', location: 'South Park' },
-        ].map(async (userData) => {
-            return prisma.user.create({
-                data: {
-                    ...userData,
-                    keywords: {
-                        create: [
-                            { word: 'South Park', description: 'I live in South Park and love it here!' },
-                            { word: 'Cartoon', description: 'I\'m a character in a popular animated TV show.' },
-                        ],
-                    },
-                    topKeywords: {
-                        create: [
-                            { word: 'Friend', description: 'I value friendship above all else.', rank: 1 },
-                            { word: 'Adventure', description: 'I love going on wild adventures!', rank: 2 },
-                            { word: 'Humor', description: 'I appreciate a good laugh and witty jokes.', rank: 3 },
-                            { word: 'School', description: 'I attend South Park Elementary.', rank: 4 },
-                            { word: 'Family', description: 'Family is important to me.', rank: 5 },
-                        ],
-                    },
-                    icebreakers: {
-                        create: [
-                            { question: 'What\'s your favorite South Park episode?' },
-                            { question: 'If you could have any superpower, what would it be?' },
-                        ],
-                    },
-                },
-            })
-        })
-    )
+    const users = await Promise.all([
+        createUser('alice', 'alice@example.com', 'password123', 'Alice Johnson', 25, 'Female', 'New York'),
+        createUser('bob', 'bob@example.com', 'password456', 'Bob Smith', 30, 'Male', 'Los Angeles'),
+        createUser('charlie', 'charlie@example.com', 'password789', 'Charlie Brown', 28, 'Male', 'Chicago'),
+        createUser('diana', 'diana@example.com', 'passwordabc', 'Diana Lee', 27, 'Female', 'San Francisco'),
+    ])
 
-    const towelie = users[0]
+    // Add keywords, top keywords, and icebreakers for each user
+    for (const user of users) {
+        await addUserDetails(user.id)
+    }
 
     // Create friend requests
-    await Promise.all(
-        users.slice(1, 6).map((user) =>
-            prisma.friendRequest.create({
+    await createFriendRequests(users)
+
+    // Create chats and messages
+    await createChatsAndMessages(users)
+
+    console.log('Seed data has been successfully added to the database.')
+}
+
+async function createUser(username: string, email: string, password: string, nickname: string, age: number, gender: string, location: string) {
+    const hashedPassword = await hash(password, 10)
+    return prisma.user.create({
+        data: {
+            username,
+            email,
+            password: hashedPassword,
+            nickname,
+            age,
+            gender,
+            location,
+            profileImage: `https://api.dicebear.com/6.x/avataaars/svg?seed=${username}`,
+            showAge: true,
+            showGender: true,
+            showLocation: true,
+            publicProfile: true,
+            emailNotifications: true,
+            pushNotifications: true,
+            language: 'en',
+        },
+    })
+}
+
+async function addUserDetails(userId: string) {
+    // Add keywords
+    const keywords = [
+        { word: 'Travel', description: 'I love exploring new places and cultures.' },
+        { word: 'Music', description: 'Music is my passion, I play guitar and piano.' },
+        { word: 'Technology', description: 'I\'m a tech enthusiast and always excited about new gadgets.' },
+        { word: 'Cooking', description: 'I enjoy experimenting with different cuisines in the kitchen.' },
+        { word: 'Fitness', description: 'Staying healthy and active is important to me.' },
+    ]
+
+    await prisma.keyword.createMany({
+        data: keywords.map(keyword => ({ ...keyword, userId })),
+    })
+
+    // Add top keywords
+    const topKeywords = keywords.slice(0, 3)
+    await prisma.topKeyword.createMany({
+        data: topKeywords.map((keyword, index) => ({
+            word: keyword.word,
+            rank: index + 1,
+            userId
+        })),
+    })
+
+    // Add icebreakers
+    const icebreakers = [
+        'What\'s your favorite travel destination?',
+        'If you could master any musical instrument, which would it be?',
+        'What\'s the most exciting tech innovation you\'ve seen recently?',
+    ]
+
+    await prisma.icebreaker.createMany({
+        data: icebreakers.map(question => ({ question, userId })),
+    })
+}
+
+async function createFriendRequests(users: any[]) {
+    for (let i = 0; i < users.length; i++) {
+        for (let j = i + 1; j < users.length; j++) {
+            await prisma.friendRequest.create({
                 data: {
-                    senderId: user.id,
-                    receiverId: towelie.id,
+                    senderId: users[i].id,
+                    receiverId: users[j].id,
                     status: 'pending',
                 },
             })
-        )
-    )
+        }
+    }
+}
 
-    // Accept some friend requests
-    await Promise.all(
-        users.slice(1, 4).map((user) =>
-            prisma.friendRequest.create({
+async function createChatsAndMessages(users: any[]) {
+    for (let i = 0; i < users.length; i++) {
+        for (let j = i + 1; j < users.length; j++) {
+            const chat = await prisma.chat.create({
                 data: {
-                    senderId: towelie.id,
-                    receiverId: user.id,
-                    status: 'accepted',
+                    participants: {
+                        connect: [{ id: users[i].id }, { id: users[j].id }],
+                    },
                 },
             })
-        )
-    )
 
-    // Create messages
-    const messages = [
-        "Don't forget to bring a towel!",
-        "You wanna get high?",
-        "I have no idea what's going on.",
-        "I'm so high right now, I have no idea what's goin' on.",
-        "That's my secret cap, I'm always high.",
-    ]
+            // Create some messages for each chat
+            const messages = [
+                `Hey ${users[j].nickname}, how are you?`,
+                `Hi ${users[i].nickname}! I'm doing great, thanks for asking. How about you?`,
+                'I\'m good too! Want to grab coffee sometime?',
+                'Sounds great! How about this weekend?',
+            ]
 
-    await Promise.all(
-        users.slice(1, 4).flatMap((user) =>
-            messages.map((content) =>
-                prisma.message.create({
+            for (let k = 0; k < messages.length; k++) {
+                await prisma.message.create({
                     data: {
-                        content,
-                        senderId: Math.random() > 0.5 ? towelie.id : user.id,
-                        receiverId: Math.random() > 0.5 ? towelie.id : user.id,
+                        content: messages[k],
+                        senderId: k % 2 === 0 ? users[i].id : users[j].id,
+                        chatId: chat.id,
                     },
                 })
-            )
-        )
-    )
-
-    console.log('Seeding completed successfully!')
+            }
+        }
+    }
 }
 
 main()

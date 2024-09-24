@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma"
 
 export async function getLoggedInUser() {
     const session = await auth()
+    console.log('logged in user', session)
 
     if (!session || !session.user) {
         throw new Error('Please Sign in')
