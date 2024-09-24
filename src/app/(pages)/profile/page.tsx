@@ -21,6 +21,7 @@ const defaultProfile: Profile = {
     topKeywords: [null, null, null, null, null],
     icebreakers: [],
     profileImage: null,
+    animation: "default", // Add this line to include the new animation field
 }
 
 export default function ProfilePage() {
@@ -114,7 +115,7 @@ export default function ProfilePage() {
                         imageUrl={profile.profileImage || "/placeholder-user.jpg"}
                         size="xl"
                         showSupportBadge={true}
-                        variant="ripple"
+                        variant={profile.animation}
                         onImageUpload={handleImageUpload}
                     />
                     <h2 className="text-xl font-semibold mt-2">{profile.nickname || 'Set your nickname'}</h2>

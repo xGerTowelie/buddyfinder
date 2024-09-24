@@ -18,6 +18,8 @@ export const ProfileSchema = z.object({
     keywords: z.array(KeywordSchema).max(10, "Maximum 10 keywords allowed"),
     topKeywords: z.array(TopKeywordSchema).length(5, "Exactly 5 top keywords required (can be empty)"),
     icebreakers: z.array(z.string().min(1, "Icebreaker question is required")).max(5, "Maximum 5 icebreakers allowed"),
+    profileImage: z.string().nullable(),
+    animation: z.enum(["default", "neon", "ripple", "outline", "rainbow", "pixelate", "liquid", "bounce", "flip", "morph", "hologram"]),
 });
 
 export type Profile = z.infer<typeof ProfileSchema>;

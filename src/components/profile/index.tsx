@@ -51,6 +51,30 @@ export const GeneralSection: React.FC<SectionProps> = ({ profile, setProfile }) 
                 onChange={(e) => setProfile({ ...profile, location: e.target.value })}
             />
         </div>
+        <div>
+            <Label htmlFor="animation">Profile Animation</Label>
+            <Select
+                value={profile.animation}
+                onValueChange={(value) => setProfile({ ...profile, animation: value as Profile['animation'] })}
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder="Select an animation" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="default">Default</SelectItem>
+                    <SelectItem value="neon">Neon</SelectItem>
+                    <SelectItem value="ripple">Ripple</SelectItem>
+                    <SelectItem value="outline">Outline</SelectItem>
+                    <SelectItem value="rainbow">Rainbow</SelectItem>
+                    <SelectItem value="pixelate">Pixelate</SelectItem>
+                    <SelectItem value="liquid">Liquid</SelectItem>
+                    <SelectItem value="bounce">Bounce</SelectItem>
+                    <SelectItem value="flip">Flip</SelectItem>
+                    <SelectItem value="morph">Morph</SelectItem>
+                    <SelectItem value="hologram">Hologram</SelectItem>
+                </SelectContent>
+            </Select>
+        </div>
     </div>
 )
 
@@ -106,7 +130,6 @@ export const KeywordsSection: React.FC<SectionProps> = ({ profile, setProfile })
         </div>
     )
 }
-
 
 export const TopKeywordsSection: React.FC<SectionProps> = ({ profile, setProfile }) => {
     const handleTopKeywordChange = (index: number, selectedKeyword: Keyword | null) => {

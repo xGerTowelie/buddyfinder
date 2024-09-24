@@ -36,6 +36,7 @@ model User {
     chats              Chat[]          @relation("ChatParticipants")
     sentMessages       Message[]       @relation("UserMessages")
     notifications      Notification[]
+    animation          String          @default("default")
 }
 
 model Keyword {
@@ -106,4 +107,3 @@ model Notification {
     chatId    String?
     user      User     @relation(fields: [userId], references: [id])
 }
-
