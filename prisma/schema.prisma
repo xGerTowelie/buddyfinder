@@ -35,11 +35,10 @@ model User {
 }
 
 model Keyword {
-    id          String @id @default(uuid())
-    word        String
-    description String
-    userId      String
-    user        User   @relation(fields: [userId], references: [id])
+    id     String @id @default(uuid())
+    word   String
+    userId String
+    user   User   @relation(fields: [userId], references: [id])
 }
 
 model TopKeyword {
@@ -99,4 +98,3 @@ model Notification {
     chatId    String?
     user      User     @relation(fields: [userId], references: [id])
 }
-

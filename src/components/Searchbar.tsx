@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { SearchIcon, X } from 'lucide-react'
@@ -18,9 +18,16 @@ export function SearchBar({ hideOnSearch = false }) {
     const [selectedKeywords, setSelectedKeywords] = useState<string[]>([])
     const [isPopoverOpen, setIsPopoverOpen] = useState(false)
     const router = useRouter()
-    const pathname = usePathname()
+    const searchParams = useSearchParams()
     const inputRef = useRef<HTMLInputElement>(null)
     const popoverTriggerRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const query = searchParams.get('q')
+        if (query) {
+            setSelectedKeywords(query.split(','))
+        }
+    }, [searchParams])
 
     useEffect(() => {
         const fetchSuggestions = async () => {
@@ -48,6 +55,7 @@ export function SearchBar({ hideOnSearch = false }) {
         e.preventDefault()
         const searchQuery = [...selectedKeywords, searchTerm].filter(Boolean).join(',')
         router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+        setSearchTerm('')
     }
 
     const addKeywordToSearch = (keyword: string) => {
@@ -65,7 +73,7 @@ export function SearchBar({ hideOnSearch = false }) {
         setIsPopoverOpen(false)
     }
 
-    if (hideOnSearch && pathname === '/search') {
+    if (hideOnSearch && searchParams.get('q')) {
         return null
     }
 
