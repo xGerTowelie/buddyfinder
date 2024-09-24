@@ -19,7 +19,7 @@ model User {
     showAge            Boolean         @default(true)
     showGender         Boolean         @default(true)
     showLocation       Boolean         @default(true)
-    profileImage       String? // This line remains the same
+    profileImage       String?
     keywords           Keyword[]
     topKeywords        TopKeyword[]
     icebreakers        Icebreaker[]
@@ -86,3 +86,4 @@ model Message {
     sender    User     @relation("UserMessages", fields: [senderId], references: [id])
     chat      Chat     @relation(fields: [chatId], references: [id])
 }
+

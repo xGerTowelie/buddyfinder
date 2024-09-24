@@ -15,6 +15,11 @@ export async function GET() {
             },
             include: {
                 participants: {
+                    where: {
+                        id: {
+                            not: user.id
+                        }
+                    },
                     select: {
                         id: true,
                         username: true,
@@ -50,6 +55,11 @@ export async function POST(req: Request) {
             },
             include: {
                 participants: {
+                    where: {
+                        id: {
+                            not: user.id
+                        }
+                    },
                     select: {
                         id: true,
                         username: true,

@@ -27,6 +27,15 @@ export function initializeSocket(httpServer: HttpServer) {
                         senderId,
                         chatId,
                     },
+                    include: {
+                        sender: {
+                            select: {
+                                id: true,
+                                username: true,
+                                profileImage: true
+                            }
+                        }
+                    }
                 })
                 io.to(chatId).emit('new message', message)
             } catch (error) {

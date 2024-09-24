@@ -58,14 +58,30 @@ export default function ChatsPage() {
         messageEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }, [messages])
 
-    const handleSendMessage = () => {
-        if (message.trim() && selectedChat && socket && user) {
-            socket.emit('send message', {
-                content: message.trim(),
-                senderId: user.id,
-                chatId: selectedChat,
-            })
-            setMessage("")
+    const handleSendMessage = async () => {
+        if (message.trim() && selectedChat && user) {
+            try {
+                const response = await fetch(`/api/chats/${selectedChat}/messages`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        content: message.trim(),
+                        senderId: user.id,
+                    }),
+                })
+
+                if (response.ok) {
+                    const newMessage = await response.json()
+                    mutateMessages((prevMessages) => [...(prevMessages || []), newMessage], false)
+                    setMessage("")
+                } else {
+                    console.error('Failed to send message')
+                }
+            } catch (error) {
+                console.error('Error sending message:', error)
+            }
         }
     }
 
